@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/charts/charts.iml" filepath="$PROJECT_DIR$/charts/charts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demos/demos.iml" filepath="$PROJECT_DIR$/demos/demos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demos-server/demos-server.iml" filepath="$PROJECT_DIR$/demos-server/demos-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/examples.iml" filepath="$PROJECT_DIR$/examples/examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tests/tests.iml" filepath="$PROJECT_DIR$/tests/tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tutorials/tutorials.iml" filepath="$PROJECT_DIR$/tutorials/tutorials.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tutorials-server/tutorials-server.iml" filepath="$PROJECT_DIR$/tutorials-server/tutorials-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/web.iml" filepath="$PROJECT_DIR$/web/web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-server/web-server.iml" filepath="$PROJECT_DIR$/web-server/web-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wtk/wtk.iml" filepath="$PROJECT_DIR$/wtk/wtk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wtk-terra/wtk-terra.iml" filepath="$PROJECT_DIR$/wtk-terra/wtk-terra.iml" />
+    </modules>
+  </component>
+</project>
