@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="split-panes">
+    <properties>
+        <title>Split Panes</title>
+        <explore>SplitPane</explore>
+    </properties>
+
+    <body>
+        <p>
+            Split panes provide a draggable divider, known as a "splitter", between two components,
+            allowing a user to dynamically change the size of each component. The location of the
+            splitter is expressed in terms of a percentage value (<tt>0.0</tt> to <tt>1.0</tt>)
+            called the "split ratio", which determines how much space is allocated to each
+            component.
+        </p>
+
+        <p>
+            Split panes also have an orientation, which dictates whether the two components sit
+            side by side or one on top of another. A horizontally oriented split pane has a left
+            region and a right region; a vertically oriented split pane has a top region and a
+            bottom region. Since orientation is a runtime property of <tt>SplitPane</tt>, the
+            regions are referred to generically as the "top/left" region and the "bottom/right"
+            region and are specified using the <tt>SplitPane.Region</tt> enum.
+        </p>
+
+        <p>
+            When a split pane is resized, the caller can control how the change should affect the
+            sizes of the two components by setting the split pane's "resize mode" and its "primary
+            region". The resize mode can be set to either maintain the existing split ratio
+            (allocate space according to existing allocation percentages) or to maintain the
+            existing size of the primary region.
+        </p>
+
+        <p>
+            Finally, a split pane may be locked, which will prevent the user from dragging the
+            splitter. Note that callers will still be able to programatically adjust the split
+            ratio.
+        </p>
+
+        <p>
+            The following example shows a simple split pane that can be used to control the scale
+            of an image view. You can change the orientation of the split pane by using the
+            associated radio buttons. It also highlights the "useShadow" style, which is one of the
+            styles supported by the Terra there's implementation of the split pane skin.
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="360" height="240">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/layout/split_panes.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML for this example is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/layout/split_panes.bxml">
+            <![CDATA[
+            <Window title="Split Panes" maximized="true"
+                WindowStateListener.windowOpened="init();"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns="org.apache.pivot.wtk">
+                <bxml:script>
+                function init() {
+                    orientation.setSelection(horizontalOrientationButton);
+                }
+                </bxml:script>
+
+                <SplitPane bxml:id="splitPane" orientation="horizontal" splitRatio="0.6">
+                    <left>
+                        <Border styles="{padding:6}">
+                            <ImageView image="/org/apache/pivot/tutorials/IMG_0725_2.jpg"
+                                styles="{fill:true}"/>
+                        </Border>
+                    </left>
+                    <right>
+                        <Border>
+                            <BoxPane orientation="vertical" styles="{padding:6, spacing:8, fill:true}">
+                                <bxml:define>
+                                    <ButtonGroup bxml:id="orientation">
+                                        <buttonGroupListeners>
+                                            importClass(org.apache.pivot.wtk.Orientation);
+
+                                            function selectionChanged(buttonGroup, previousSelection) {
+                                                var selection = buttonGroup.getSelection();
+                                                if (selection == horizontalOrientationButton) {
+                                                    splitPane.setOrientation(Orientation.HORIZONTAL);
+                                                } else {
+                                                    splitPane.setOrientation(Orientation.VERTICAL);
+                                                }
+                                            }
+                                        </buttonGroupListeners>
+                                    </ButtonGroup>
+                                </bxml:define>
+
+                                <Label text="Orientation" styles="{font:{bold:true}}"/>
+                                <RadioButton bxml:id="horizontalOrientationButton"
+                                    buttonData="Horizontal" buttonGroup="$orientation"/>
+                                <RadioButton bxml:id="verticalOrientationButton"
+                                    buttonData="Vertical" buttonGroup="$orientation"/>
+
+                                <Separator/>
+
+                                <Checkbox buttonData="Use Shadow">
+                                    <buttonStateListeners>
+                                        function stateChanged(button, previousState) {
+                                            splitPane.getStyles().put("useShadow", button.isSelected());
+                                        }
+                                    </buttonStateListeners>
+                                </Checkbox>
+                            </BoxPane>
+                        </Border>
+                    </right>
+                </SplitPane>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Since this example is written entirely in BXML and script, there is no associated Java
+            source.
+        </p>
+    </body>
+</document>

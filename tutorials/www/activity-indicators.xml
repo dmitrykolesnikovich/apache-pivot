@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="activity-indicators">
+    <properties>
+        <title>Activity Indicators</title>
+    </properties>
+
+    <body>
+        <p>
+            Activity indicators are used to present an indeterminate progress state. They inform
+            the user that a background task is in progress, but that the length of the task is
+            not known. For example, an application might use an activity indicator to reflect
+            network activity, a file load operation, or a long-running CPU operation. They are
+            often animated to simulate the appearance of progress and to let the user know that
+            the UI is still responsive.
+        </p>
+
+        <p>
+            In Pivot, activity indicators are represented by instances of the
+            <tt>ActivityIndicator</tt> component, shown below:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="320" height="240">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/progress/activity_indicators.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML for the example is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/navigation/progress/activity_indicators.bxml">
+            <![CDATA[
+            <progress:ActivityIndicators title="Activity Indicators" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:progress="org.apache.pivot.tutorials.progress"
+                xmlns="org.apache.pivot.wtk">
+                <TablePane>
+                    <columns>
+                        <TablePane.Column width="1*"/>
+                    </columns>
+
+                    <TablePane.Row height="1*">
+                        <Border styles="{padding:2}">
+                            <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                                <ActivityIndicator bxml:id="activityIndicator1"
+                                    preferredWidth="24" preferredHeight="24"/>
+                                <ActivityIndicator bxml:id="activityIndicator2" styles="{color:'#aa0000'}"
+                                    preferredWidth="48" preferredHeight="48"/>
+                                <ActivityIndicator bxml:id="activityIndicator3" styles="{color:16}"
+                                    preferredWidth="96" preferredHeight="96"/>
+                            </BoxPane>
+                        </Border>
+                    </TablePane.Row>
+
+                    <TablePane.Row height="-1">
+                        <BoxPane styles="{horizontalAlignment:'center', padding:6}">
+                            <PushButton bxml:id="activityButton" styles="{minimumAspectRatio:3}"/>
+                        </BoxPane>
+                    </TablePane.Row>
+                </TablePane>
+            </progress:ActivityIndicators>
+            ]]>
+        </source>
+
+        <p>
+            Clicking the "Start" button activates the three sample indicators; clicking the
+            button again de-activates them. The button press handler simply toggles the "active"
+            property of the indicators:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/navigation/progress/ActivityIndicators.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.progress;
+
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.ActivityIndicator;
+            import org.apache.pivot.wtk.Button;
+            import org.apache.pivot.wtk.ButtonPressListener;
+            import org.apache.pivot.wtk.PushButton;
+            import org.apache.pivot.wtk.Window;
+
+            public class ActivityIndicators extends Window implements Bindable {
+                private ActivityIndicator activityIndicator1 = null;
+                private ActivityIndicator activityIndicator2 = null;
+                private ActivityIndicator activityIndicator3 = null;
+                private PushButton activityButton = null;
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    activityIndicator1 = (ActivityIndicator)namespace.get("activityIndicator1");
+                    activityIndicator2 = (ActivityIndicator)namespace.get("activityIndicator2");
+                    activityIndicator3 = (ActivityIndicator)namespace.get("activityIndicator3");
+                    activityButton = (PushButton)namespace.get("activityButton");
+
+                    activityButton.getButtonPressListeners().add(new ButtonPressListener() {
+                        @Override
+                        public void buttonPressed(Button button) {
+                            activityIndicator1.setActive(!activityIndicator1.isActive());
+                            activityIndicator2.setActive(!activityIndicator2.isActive());
+                            activityIndicator3.setActive(!activityIndicator3.isActive());
+                            updateButtonData();
+                        }
+                    });
+
+                    updateButtonData();
+                }
+
+                private void updateButtonData() {
+                    activityButton.setButtonData(activityIndicator1.isActive() ? "Stop" : "Start");
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            Note that activity indicators are scalable. They are drawn using the Java 2D API
+            and can be presented at different sizes without losing resolution. Also note that
+            the default activity indicator skin supports "color" and "backgroundColor" styles
+            to allow further customization of their appearance.
+        </p>
+    </body>
+</document>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<Window title="Test BXML" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:content="org.apache.pivot.wtk.content"
+    xmlns:collections="org.apache.pivot.collections"
+    xmlns="org.apache.pivot.wtk"
+    preferredWidth="800" preferredHeight="600"
+>
+
+<ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+<BoxPane orientation="vertical" styles="{padding:6, spacing:8, fill:true}">
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+            <BoxPane orientation="vertical">
+                <Label text="Basic Push Buttons" styles="{font:{bold:true}}"/>
+                <BoxPane>
+                    <bxml:define>
+                        <ButtonGroup bxml:id="pushButtons"/>
+                    </bxml:define>
+                    <PushButton buttonData="One"/>
+                    <PushButton buttonData="Two"/>
+                    <PushButton buttonData="Three" enabled="false"/>
+                </BoxPane>
+            </BoxPane>
+
+            <BoxPane orientation="vertical">
+                <Label text="Ungrouped Toggle Buttons" styles="{font:{bold:true}}"/>
+                <BoxPane>
+                    <bxml:define>
+                        <ButtonGroup bxml:id="toggleButtons"/>
+                    </bxml:define>
+                    <PushButton buttonData="One" toggleButton="true"/>
+                    <PushButton buttonData="Two" toggleButton="true"/>
+                    <PushButton buttonData="Three" toggleButton="true" enabled="false"/>
+                </BoxPane>
+            </BoxPane>
+
+            <BoxPane orientation="vertical">
+                <Label text="Basic Radio Buttons" styles="{font:{bold:true}}"/>
+                <BoxPane>
+                    <bxml:define>
+                        <ButtonGroup bxml:id="radioButtons"/>
+                    </bxml:define>
+                    <RadioButton buttonData="One" buttonGroup="$radioButtons"/>
+                    <RadioButton buttonData="Two" buttonGroup="$radioButtons"/>
+                    <RadioButton buttonData="Three" buttonGroup="$radioButtons" selected="true" enabled="false"/>
+                </BoxPane>
+            </BoxPane>
+
+            <BoxPane orientation="vertical">
+                <Label text="Basic Checkboxes" styles="{font:{bold:true}}"/>
+                <BoxPane>
+                    <bxml:define>
+                        <ButtonGroup bxml:id="checkButtons"/>
+                    </bxml:define>
+                    <Checkbox buttonData="One"/>
+                    <Checkbox buttonData="Two"/>
+                    <Checkbox buttonData="Three" selected="true" enabled="false"/>
+                </BoxPane>
+            </BoxPane>
+
+            <BoxPane orientation="vertical">
+                <Label text="Tri-state Checkboxes" styles="{font:{bold:true}}"/>
+                <BoxPane orientation="vertical">
+                    <bxml:define>
+                        <ButtonGroup bxml:id="checkTriButtons"/>
+                    </bxml:define>
+                    <Checkbox buttonData="Read" triState="true" state="selected"/>
+                    <Checkbox buttonData="Write" triState="true" state="unselected"/>
+                    <Checkbox buttonData="Execute" triState="true" state="mixed" enabled="false"/>
+                </BoxPane>
+            </BoxPane>
+
+    </BoxPane>
+    <Separator/>
+
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+        <FlowPane>
+            <Label text="Select one element (listDataKey set):"/>
+            <ListButton bxml:id="listButton1" buttonData="Color"
+                listDataKey="colorKey"
+            >
+                <content:ListItem text="Red"/>
+                <content:ListItem text="Orange"/>
+                <content:ListItem text="Yellow"/>
+                <content:ListItem text="Green"/>
+                <content:ListItem text="Blue"/>
+                <content:ListItem text="Purple"/>
+            </ListButton>
+        </FlowPane>
+        <Separator/>
+        <FlowPane>
+            <Label text="Select one element (listDataKey not set):"/>
+            <ListButton bxml:id="listButton2" buttonData="Number"
+                listData="['One', 'Two', 'Three']"
+            />
+        </FlowPane>
+    </BoxPane>
+    <Separator/>
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+        <FlowPane>
+            <Label text="Select a date (selectedDateKey set):"/>
+            <CalendarButton bxml:id="calendarButton1" selectedDateKey = "selectedDateKey" />
+        </FlowPane>
+        <Separator/>
+        <FlowPane>
+            <Label text="Select a date (selectedDateKey not set):"/>
+            <CalendarButton bxml:id="calendarButton2" />
+        </FlowPane>
+    </BoxPane>
+    <Separator/>
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+        <Label text="Select a value (spinnerDataKey set):"/>
+        <Spinner bxml:id="spinner1" preferredWidth="60"
+            spinnerData="['One', 'Two', 'Three', 'Four', 'Five']"
+            circular="true"
+            selectedIndex="0"
+            spinnerDataKey="spinnerDataKey"
+        />
+        <Separator/>
+        <Label text="Select a value (spinnerDataKey not set):"/>
+        <Spinner bxml:id="spinner2" preferredWidth="60"
+            spinnerData="['One', 'Two', 'Three', 'Four', 'Five']"
+            circular="true"
+            selectedIndex="0"
+        />
+    </BoxPane>
+    <Separator/>
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+        <FlowPane>
+            <Label text="ListView (listDataKey set):"/>
+               <ListView bxml:id="listView1" selectMode="multi" listDataKey= "listDataKey">
+                   <listData>
+                       <content:NumericSpinnerData lowerBound="0" upperBound="3" increment="1"/>
+                </listData>
+            </ListView>
+        </FlowPane>
+        <Separator/>
+        <FlowPane>
+            <Label text="ListView (listDataKey not set):"/>
+               <ListView bxml:id="listView2" selectMode="multi">
+                   <listData>
+                       <content:NumericSpinnerData lowerBound="0" upperBound="3" increment="1"/>
+                </listData>
+            </ListView>
+        </FlowPane>
+    </BoxPane>
+    <Separator/>
+
+    <!--
+    <SplitPane orientation="horizontal" splitRatio="0.5" resizeMode="primary_region"
+        preferredWidth="700" preferredHeight="100"
+    >
+        <top>
+    -->
+    <BoxPane orientation="vertical" styles="{fill:true}">
+           <Label text="TableView (tableDataKey set):"/>
+            <TableView bxml:id="tableView1" styles="{variableRowHeight:true, backgroundColor:'#ffeeee'}" selectMode="multi" tableDataKey="tableDataKey">
+                <columns>
+                    <TableView.Column name="value" width="1*"/>
+                    <TableView.Column width="1*"/>
+                </columns>
+                <collections:HashMap value="Single Line"/>
+                <collections:HashMap value="Double&#xA;Line Line Line Line!"/>
+                <collections:HashMap value="Single Line"/>
+                <collections:HashMap value="Double&#xA;Line"/>
+            </TableView>
+    <!--
+        </top>
+        <bottom>
+    -->
+           <Label text="TableView (tableDataKey not set):"/>
+            <TableView bxml:id="tableView2" styles="{variableRowHeight:true, backgroundColor:'#ffeeee'}" selectMode="multi">
+                <columns>
+                    <TableView.Column name="value" width="1*"/>
+                    <TableView.Column width="1*"/>
+                </columns>
+                <collections:HashMap value="Single Line"/>
+                <collections:HashMap value="Double&#xA;Line Line Line Line!"/>
+                <collections:HashMap value="Single Line"/>
+                <collections:HashMap value="Double&#xA;Line"/>
+            </TableView>
+    <!--
+        </bottom>
+    </SplitPane>
+    -->
+    </BoxPane>
+    <Separator/>
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top'}">
+        <FlowPane>
+            <Label text="TreeView (treeDataKey set):"/>
+            <TreeView bxml:id="treeView1" selectMode="multi"
+                ComponentListener.parentChanged="treeView1.expandAll();"
+                 treeDataKey="treeDataKey"
+            >
+                <nodeRenderer>
+                    <content:TreeViewNodeRenderer showIcon="true"/>
+                </nodeRenderer>
+                <treeData>
+                    <content:TreeBranch>
+                        <content:TreeBranch text="Activity">
+                            <content:TreeBranch text="Games">
+                                <content:TreeNode text="Foosball"/>
+                                <content:TreeNode text="Ping Pong"/>
+                                <content:TreeNode text="Air Hockey"/>
+                            </content:TreeBranch>
+                        </content:TreeBranch>
+                    </content:TreeBranch>
+                </treeData>
+            </TreeView>
+        </FlowPane>
+        <Separator/>
+        <FlowPane>
+            <Label text="TreeView (treeDataKey not set):"/>
+            <TreeView bxml:id="treeView2" selectMode="multi"
+                ComponentListener.parentChanged="treeView2.expandAll();"
+            >
+                <nodeRenderer>
+                    <content:TreeViewNodeRenderer showIcon="true"/>
+                </nodeRenderer>
+                <treeData>
+                    <content:TreeBranch>
+                        <content:TreeBranch text="Activity">
+                            <content:TreeBranch text="Games">
+                                <content:TreeNode text="Foosball"/>
+                                <content:TreeNode text="Ping Pong"/>
+                                <content:TreeNode text="Air Hockey"/>
+                            </content:TreeBranch>
+                        </content:TreeBranch>
+                    </content:TreeBranch>
+                </treeData>
+            </TreeView>
+        </FlowPane>
+    </BoxPane>
+    <Separator/>
+
+
+    <BoxPane styles="{padding:4, verticalAlignment:'top', horizontalAlignment:'center'}">
+        <PushButton bxml:id="clearSelectionButton" buttonData="Click to Clear Selection in supported Components" enabled="true"/>
+        <PushButton bxml:id="clearButton" buttonData="Click to Clear data in supported Components"/>
+    </BoxPane>
+
+</BoxPane>
+</ScrollPane>
+
+</Window>

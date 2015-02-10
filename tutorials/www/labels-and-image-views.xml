@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="labels-and-image-views">
+    <properties>
+        <title>Labels &amp; Image Views</title>
+    </properties>
+
+    <body>
+        <p>
+            This section introduces two of the least complex but most common Pivot components:
+            <tt>Label</tt> and <tt>ImageView</tt>. Labels are used to present a block of static,
+            optionally wrapped, text, and image views are used to display a static graphic. The
+            applet below shows an <tt>ImageView</tt> followed by a <tt>Label</tt>:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="120" height="40">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/labels/labels.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            Below is the BXML source used to generate the applet's contents:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/labels/labels.bxml">
+            <![CDATA[
+            <Window title="Labels" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns="org.apache.pivot.wtk">
+                <BoxPane styles="{padding:4, verticalAlignment:'center'}">
+                    <ImageView image="/org/apache/pivot/tutorials/clock.png"/>
+                    <Label text="What time is it?"/>
+                </BoxPane>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Note that the example uses a <tt>BoxPane</tt> to arrange the components
+            horizontally. The <tt>BoxPane</tt> container is discussed in more detail in the
+            <a href="layout-containers.html">Layout Containers</a> section.
+        </p>
+    </body>
+</document>

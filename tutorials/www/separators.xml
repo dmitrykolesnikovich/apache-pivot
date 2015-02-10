@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="separators">
+    <properties>
+        <title>Separators</title>
+    </properties>
+
+    <body>
+        <p>
+            Separators are simple components that are similar to a horizontal rule in HTML. They
+            have an optional heading and are generally used to partition content, as shown in the
+            sample application below:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="420" height="180">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/separators/separators.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML for this sample is as follows. Note that the box pane sets the "fill" style to
+            true; otherwise, the separator would not grow to fill the horizontal space:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/separators/separators.bxml">
+            <![CDATA[
+            <Window title="Separators" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns="org.apache.pivot.wtk">
+                <BoxPane orientation="vertical" styles="{padding:4, spacing:10, fill:true}">
+                    <Separator heading="Section 1"/>
+                    <Label text="This is the content of section 1."/>
+
+                    <Separator heading="Section 2"/>
+                    <Label text="This is the content of section 2."/>
+
+                    <Separator heading="Section 3"/>
+                    <Label text="This is the content of section 3."/>
+                </BoxPane>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Since this example contains no logic, there is no associated Java source.
+        </p>
+    </body>
+</document>

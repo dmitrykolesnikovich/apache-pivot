@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="web-queries">
+    <properties>
+        <title>Web Queries</title>
+    </properties>
+
+    <body>
+        <p>
+            "Web queries" are Pivot's native means of communicating with remote data services. They
+            are designed primarily to facilitate interaction with JSON-based REST services, but
+            they are sufficiently generic to support communication with any type of HTTP-based
+            service, using any data format.
+        </p>
+
+        <p>
+            A web query is represented by an instance of <tt>org.apache.pivot.web.Query</tt>,
+            which extends the <tt>Task</tt> class discussed in the previous section. <tt>Query</tt>
+            is an abstract class with four concrete subclasses, each of which corresponds to once
+            of the four primary HTTP verbs:
+        </p>
+
+        <ul>
+            <li><p><b>GetQuery</b> - executes an HTTP GET request</p></li>
+            <li><p><b>PostQuery</b> - executes an HTTP POST request</p></li>
+            <li><p><b>PutQuery</b> - executes an HTTP PUT request</p></li>
+            <li><p><b>DeleteQuery</b> - executes an HTTP DELETE request</p></li>
+        </ul>
+
+        <p>
+            Query string parameters are specified via the query's parameter dictionary, and request
+            headers can be specified via the request header dictionary. After the query has been
+            executed, response headers are also available via the response header dictionary.
+        </p>
+
+        <p>
+            All query types have an associated serializer that is used to serialize or deserialize
+            the request or response data. <tt>GetQuery</tt> returns an <tt>Object</tt> representing
+            the data that was returned by the server, <tt>PostQuery</tt> and <tt>PutQuery</tt>
+            define a <tt>value</tt> property that is sent to the server when the query is executed,
+            and, by definition, <tt>DeleteQuery</tt> neither accepts nor returns a value.
+        </p>
+
+        <p>
+            Because they are instances of <tt>Task</tt>, web queries can be (and usually are)
+            executed asynchronously, such that the UI doesn't get bogged down waiting for the
+            server to respond. The following application demonstrates the use of a
+            <tt>GetQuery</tt> to read data from a Yahoo! Pipe. The pipe in this example searches
+            for "pizza" within 5 miles of Cambridge, Massachusetts (note that the applet is signed
+            to allow it to communicate with the Yahoo web service):
+        </p>
+
+        <application class="org.apache.pivot.tutorials.webqueries.WebQueries"
+            width="240" height="320">
+            <libraries signed="true">
+                <library>core</library>
+                <library>web</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+        </application>
+
+        <p>The BXML for the application's user interface is as follows:</p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/webqueries/web_queries.bxml">
+            <![CDATA[
+            <Window title="Web Queries" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:webqueries="org.apache.pivot.tutorials.webqueries"
+                xmlns="org.apache.pivot.wtk">
+                <Border styles="{color:10}">
+                    <StackPane>
+                        <ScrollPane horizontalScrollBarPolicy="fill">
+                            <ListView bxml:id="listView">
+                                <itemRenderer>
+                                    <webqueries:ResultItemRenderer/>
+                                </itemRenderer>
+                            </ListView>
+                        </ScrollPane>
+
+                        <Label bxml:id="loadingLabel" text="Loading..."
+                            styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+                    </StackPane>
+                </Border>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Note that the <tt>ListView</tt> defines a custom item renderer; this renderer is used
+            to present the name, address, and phone number of the matching items returned by the
+            query.
+        </p>
+
+        <p>The Java source for the application is as follows:</p>
+
+        <source type="java" location="org/apache/pivot/tutorials/webqueries/WebQueries.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.webqueries;
+
+            import org.apache.pivot.beans.BXMLSerializer;
+            import org.apache.pivot.collections.List;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.json.JSON;
+            import org.apache.pivot.util.concurrent.Task;
+            import org.apache.pivot.util.concurrent.TaskListener;
+            import org.apache.pivot.web.GetQuery;
+            import org.apache.pivot.wtk.Application;
+            import org.apache.pivot.wtk.DesktopApplicationContext;
+            import org.apache.pivot.wtk.Display;
+            import org.apache.pivot.wtk.Label;
+            import org.apache.pivot.wtk.ListView;
+            import org.apache.pivot.wtk.TaskAdapter;
+            import org.apache.pivot.wtk.Window;
+
+            public class WebQueries implements Application {
+                private Window window = null;
+
+                private ListView listView = null;
+                private Label loadingLabel = null;
+
+                @Override
+                public void startup(Display display, Map<String, String> properties) throws Exception {
+                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
+                    window = (Window)bxmlSerializer.readObject(WebQueries.class, "web_queries.bxml");
+
+                    listView = (ListView)bxmlSerializer.getNamespace().get("listView");
+                    loadingLabel = (Label)bxmlSerializer.getNamespace().get("loadingLabel");
+
+                    // Execute the query:
+                    // http://pipes.yahoo.com/pipes/pipe.run?_id=43115761f2da5af5341ae2e56a93d646&_render=json
+                    GetQuery getQuery = new GetQuery("pipes.yahoo.com", "/pipes/pipe.run");
+                    getQuery.getParameters().put("_id", "43115761f2da5af5341ae2e56a93d646");
+                    getQuery.getParameters().put("_render", "json");
+
+                    getQuery.execute(new TaskAdapter<Object>(new TaskListener<Object>() {
+                        @Override
+                        public void taskExecuted(Task<Object> task) {
+                            List<?> items = (List<?>)JSON.get(task.getResult(), "value.items");
+                            if (items.getLength() > 0) {
+                                listView.setListData(items);
+                                loadingLabel.setVisible(false);
+                            } else {
+                                loadingLabel.setText("No results.");
+                            }
+                        }
+
+                        @Override
+                        public void executeFailed(Task<Object> task) {
+                            loadingLabel.setText(task.getFault().getMessage());
+                        }
+                    }));
+
+                    window.open(display);
+                }
+
+                @Override
+                public boolean shutdown(boolean optional) {
+                    if (window != null) {
+                        window.close();
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public void suspend() {
+                }
+
+                @Override
+                public void resume() {
+                }
+
+                public static void main(String[] args) {
+                    DesktopApplicationContext.main(WebQueries.class, args);
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            In <tt>startup()</tt>, the application creates the query object and sets the
+            appropriate query string parameters to identify the pipe and ensure that the pipe's
+            output is returned as JSON data. It then executes the query, wrapping the task listener
+            in a task adapter to ensure that the callback is executed on the UI thread. When the
+            data is obtained, the "items" list is extracted from it and set as the data of the
+            list view component.
+        </p>
+
+        <p>
+            The application uses a custom list item renderer to present the result data. The
+            renderer is defined as follows (it extends <tt>BoxPane</tt> and uses labels to present
+            the name, address, and phone numbers of the result items):
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/webqueries/ResultItemRenderer.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.webqueries;
+
+            import java.awt.Color;
+            import java.awt.Font;
+
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.json.JSON;
+            import org.apache.pivot.wtk.BoxPane;
+            import org.apache.pivot.wtk.Insets;
+            import org.apache.pivot.wtk.Label;
+            import org.apache.pivot.wtk.ListView;
+            import org.apache.pivot.wtk.Orientation;
+
+            public class ResultItemRenderer extends BoxPane implements ListView.ItemRenderer {
+                private Label titleLabel = new Label();
+                private Label addressLabel = new Label();
+                private Label phoneLabel = new Label();
+
+                public ResultItemRenderer() {
+                    super(Orientation.VERTICAL);
+
+                    add(titleLabel);
+                    add(addressLabel);
+                    add(phoneLabel);
+
+                    getStyles().put("padding", new Insets(3, 2, 3, 2));
+                    getStyles().put("spacing", 2);
+                }
+
+                @Override
+                public void setSize(int width, int height) {
+                    super.setSize(width, height);
+                    validate();
+                }
+
+                @Override
+                public String toString(Object item) {
+                    return JSON.get(item, "title");
+                }
+
+                @Override
+                public void render(Object item, int index, ListView listView, boolean selected,
+                    boolean checked, boolean highlighted, boolean disabled) {
+                    if (item != null) {
+                        titleLabel.setText((String)JSON.get(item, "title"));
+                        phoneLabel.setText((String)JSON.get(item, "Phone"));
+
+                        Map<String, ?> location = JSON.get(item, "['y:location']");
+                        if (location == null) {
+                            addressLabel.setText("");
+                        } else {
+                            String street = JSON.get(location, "street");
+                            String city = JSON.get(location, "city");
+                            String state = JSON.get(location, "state");
+                            addressLabel.setText(street + ", " + city + " " + state);
+                        }
+                    }
+
+                    Font font = (Font)listView.getStyles().get("font");
+                    titleLabel.getStyles().put("font", font.deriveFont(font.getStyle() | Font.BOLD));
+                    phoneLabel.getStyles().put("font", font);
+                    addressLabel.getStyles().put("font", font);
+
+                    Color color;
+                    if (listView.isEnabled() && !disabled) {
+                        if (selected) {
+                            if (listView.isFocused()) {
+                                color = (Color)listView.getStyles().get("selectionColor");
+                            } else {
+                                color = (Color)listView.getStyles().get("inactiveSelectionColor");
+                            }
+                        } else {
+                            color = (Color)listView.getStyles().get("color");
+                        }
+                    } else {
+                        color = (Color)listView.getStyles().get("disabledColor");
+                    }
+
+                    titleLabel.getStyles().put("color", color);
+                    phoneLabel.getStyles().put("color", color);
+                    addressLabel.getStyles().put("color", color);
+                }
+            }
+            ]]>
+        </source>
+    </body>
+</document>

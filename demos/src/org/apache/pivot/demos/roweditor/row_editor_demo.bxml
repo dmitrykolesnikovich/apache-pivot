@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<Window title="%title" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:content="org.apache.pivot.wtk.content"
+    xmlns:demo="org.apache.pivot.demos.roweditor"
+    xmlns="org.apache.pivot.wtk">
+    <Border styles="{color:7}">
+        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+            <TableView bxml:id="tableView" selectMode="multi">
+                <columns>
+                    <TableView.Column name="date" width="87" headerData="%headers.date"/>
+                    <TableView.Column name="type" width="125" headerData="%headers.type"/>
+                    <TableView.Column name="amount" width="75" headerData="%headers.amount">
+                        <cellRenderer>
+                            <content:TableViewNumberCellRenderer numberFormat="%formats.currency"/>
+                        </cellRenderer>
+                    </TableView.Column>
+                    <TableView.Column name="description" width="1*" headerData="%headers.description" minimumWidth="150"/>
+                </columns>
+
+                <rowEditor>
+                    <content:TableViewRowEditor editEffect="horizontal_slide">
+                        <cellEditors>
+                            <date>
+                                <Spinner selectedItemKey="date">
+                                    <spinnerData>
+                                        <content:CalendarDateSpinnerData/>
+                                    </spinnerData>
+                                </Spinner>
+                            </date>
+
+                            <type>
+                                <ListButton listData="['Hotel', 'Miscellaneous', 'Meals', 'Parking', 'Travel']"
+                                    selectedItemKey="type"/>
+                            </type>
+
+                            <amount>
+                                <TextInput strictValidation="true" textKey="amount">
+                                    <validator>
+                                        <demo:CurrencyValidator/>
+                                    </validator>
+                                    <textBindMapping>
+                                        <demo:AmountBindMapping/>
+                                    </textBindMapping>
+                                </TextInput>
+                            </amount>
+
+                            <description>
+                                <TextInput textKey="description"/>
+                            </description>
+                        </cellEditors>
+                    </content:TableViewRowEditor>
+                </rowEditor>
+
+                <demo:CustomTableRow date="2010-03-28" type="Travel" amount="1286.90" description="Ticket #145-XX-71903-09"/>
+                <demo:CustomTableRow date="2010-03-28" type="Meals" amount="34.12" description="Took client out"/>
+                <demo:CustomTableRow date="2010-03-31" type="Meals" amount="27.00" description=""/>
+                <demo:CustomTableRow date="2010-04-01" type="Meals" amount="12.55" description=""/>
+                <demo:CustomTableRow date="2010-04-02" type="Meals" amount="18.86" description=""/>
+                <demo:CustomTableRow date="2010-04-02" type="Parking" amount="30.00" description="Cambridge Center parking"/>
+                <demo:CustomTableRow date="2010-04-03" type="Meals" amount="20.72" description=""/>
+                <demo:CustomTableRow date="2010-04-06" type="Hotel" amount="529.90" description="Marriott reservation #DF-9982-BRN"/>
+            </TableView>
+
+            <columnHeader>
+                <TableViewHeader tableView="$tableView" styles="{headersPressable:false}"/>
+            </columnHeader>
+        </ScrollPane>
+    </Border>
+</Window>

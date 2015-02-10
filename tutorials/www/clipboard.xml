@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="clipboard">
+    <properties>
+        <title>Clipboard</title>
+    </properties>
+
+    <body>
+        <p>
+            The clipboard is a shared storage area that can be used to transfer data within an
+            application or between multiple applications. Content placed on the clipboard can be
+            copied (or "pasted") into another section of an application or into a completely
+            different application.
+        </p>
+
+        <p>
+            The following application demonstrates the use of the clipboard. It is signed to allow
+            it to access the system clipboard; untrusted Pivot applications can only perform copy
+            and paste with a local clipboard whose content is not shared with other applications.
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication" width="720" height="480">
+            <libraries signed="true">
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/clipboard/clipboard.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The application source code consists of two files: a main BXML file that declares the
+            structure of the user interface along with some simple event handlers, and a JavaScript
+            file that defines two functions: <tt>copy()</tt> and <tt>paste()</tt>. These functions
+            are invoked by the button press listeners attached to the UI elements declared in the
+            BXML file. The BXML source code for the example is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/clipboard/clipboard.bxml">
+            <![CDATA[
+            <Window title="Clipboard" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns="org.apache.pivot.wtk">
+                <bxml:script src="clipboard.js"/>
+
+                <windowStateListeners>
+                    function windowOpened(window) {
+                        sourceImageButtonGroup.setSelection(sourceImageButton1);
+                        sourceImageButton1.requestFocus();
+                    }
+                </windowStateListeners>
+
+                <TablePane styles="{horizontalSpacing:4, verticalSpacing:4}">
+                    <columns>
+                        <TablePane.Column width="1*"/>
+                        <TablePane.Column width="1*"/>
+                    </columns>
+
+                    <TablePane.Row height="1*">
+                        <Border styles="{padding:2}">
+                            <CardPane bxml:id="sourceImageCardPane" styles="{padding:4}">
+                                <ImageView image="/org/apache/pivot/tutorials/IMG_0725_2.jpg"/>
+                                <ImageView image="/org/apache/pivot/tutorials/IMG_0735_2.jpg"/>
+                                <ImageView image="/org/apache/pivot/tutorials/IMG_0767_2.jpg"/>
+                            </CardPane>
+                        </Border>
+                        <Border styles="{padding:2}">
+                            <CardPane selectedIndex="0" styles="{padding:4}">
+                                <ImageView bxml:id="destinationImageView"/>
+                            </CardPane>
+                        </Border>
+                    </TablePane.Row>
+
+                    <TablePane.Row height="-1">
+                        <BoxPane orientation="vertical" styles="{fill:true}">
+                            <BoxPane bxml:id="sourceImageButtonBoxPane"
+                                styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                                <bxml:define>
+                                    <ButtonGroup bxml:id="sourceImageButtonGroup">
+                                        <buttonGroupListeners>
+                                            function selectionChanged(buttonGroup, previousSelection) {
+                                                var selection = buttonGroup.getSelection();
+
+                                                if (selection != null) {
+                                                    var index = sourceImageButtonBoxPane.indexOf(selection);
+                                                    sourceImageCardPane.setSelectedIndex(index);
+                                                }
+                                            }
+                                        </buttonGroupListeners>
+                                    </ButtonGroup>
+                                </bxml:define>
+
+                                <PushButton bxml:id="sourceImageButton1"
+                                    buttonData="IMG_0725_2.jpg" toggleButton="true"
+                                    buttonGroup="$sourceImageButtonGroup"/>
+                                <PushButton bxml:id="sourceImageButton2"
+                                    buttonData="IMG_0735_2.jpg" toggleButton="true"
+                                    buttonGroup="$sourceImageButtonGroup"/>
+                                <PushButton bxml:id="sourceImageButton3"
+                                    buttonData="IMG_0767_2.jpg" toggleButton="true"
+                                    buttonGroup="$sourceImageButtonGroup"/>
+                            </BoxPane>
+
+                            <BoxPane styles="{horizontalAlignment:'center'}">
+                                <PushButton bxml:id="copyButton" buttonData="Copy"
+                                    ButtonPressListener.buttonPressed="copy()"/>
+                            </BoxPane>
+                        </BoxPane>
+
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <PushButton bxml:id="pasteButton" buttonData="Paste"
+                                ButtonPressListener.buttonPressed="paste()"/>
+                        </BoxPane>
+                    </TablePane.Row>
+                </TablePane>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Like most Pivot tutorial examples, it defines a single top-level, maximized,
+            undecorated <tt>Window</tt> instance that contains the rest of the UI. The source
+            images are contained in a set of <tt>ImageView</tt> components stored in a
+            <tt>CardPane</tt>, and a set of toggle-style <tt>PushButton</tt>s is used to navigate
+            between them. Another <tt>ImageView</tt> is used to display the image content pasted
+            from the clipboard.
+        </p>
+
+        <p>The file defines several event handlers:</p>
+
+        <ul>
+            <li>
+                <p>A window state listener that initializes the selection of the card pane when the window is opened:</p>
+
+                <source type="xml">
+                    <![CDATA[
+                    <windowStateListeners>
+                        function windowOpened(window) {
+                            sourceImageButtonGroup.setSelection(sourceImageButton1);
+                            sourceImageButton1.requestFocus();
+                        }
+                    </windowStateListeners>
+                    ]]>
+                </source>
+            </li>
+            <li>
+                <p>A button group listener that changes the card pane's selection in response to a button group selection change:</p>
+                <source type="xml">
+                    <![CDATA[
+                    <buttonGroupListeners>
+                        function selectionChanged(buttonGroup, previousSelection) {
+                            var selection = buttonGroup.getSelection();
+
+                            if (selection != null) {
+                                var index = sourceImageButtonBoxPane.indexOf(selection);
+                                sourceImageCardPane.setSelectedIndex(index);
+                            }
+                        }
+                    </buttonGroupListeners>
+                    ]]>
+                </source>
+            </li>
+            <li>
+                <p>A button press listener that calls the <tt>copy()</tt> function when the "Copy" button is pressed:</p>
+                <source type="xml">
+                    <![CDATA[
+                    <PushButton bxml:id="copyButton" buttonData="Copy"
+                        ButtonPressListener.buttonPressed="copy()"/>
+                    ]]>
+                </source>
+            </li>
+            <li>
+                <p>A button press listener that calls the <tt>paste()</tt> function when the "Paste" button is pressed:</p>
+                <source type="xml">
+                    <![CDATA[
+                    <PushButton bxml:id="pasteButton" buttonData="Paste"
+                        ButtonPressListener.buttonPressed="paste()"/>
+                    ]]>
+                </source>
+            </li>
+        </ul>
+
+        <p>
+            Since all of the application's logic is implemented in script, there is no Java source
+            file for this example. The contents of "clipboard.js" are shown below:
+        </p>
+
+        <source type="javascript">
+            <![CDATA[
+            importPackage(org.apache.pivot.wtk);
+
+            function copy() {
+                // Copy the selected image to the clipboard
+                var selectedSourceIndex = sourceImageCardPane.getSelectedIndex();
+                var sourceImageView = sourceImageCardPane.get(selectedSourceIndex);
+                var sourceImage = sourceImageView.getImage();
+
+                var content = new LocalManifest();
+                content.putImage(sourceImage);
+
+                Clipboard.setContent(content);
+            }
+
+            function paste() {
+                // Paste any available image from the clipboard
+                var content = Clipboard.getContent();
+
+                if (content != null) {
+                    var image = content.getImage();
+
+                    if (image != null) {
+                        destinationImageView.setImage(image);
+                    }
+                }
+            ]]>
+        </source>
+
+        <p>
+            These two functions perform the actual copying and pasting of the image data. The
+            <tt>copy()</tt> function gets a reference to the actual image displayed by the selected
+            card (an instance of <tt>org.apache.pivot.wtk.media.Image</tt>) and sets it as the
+            "image" property of a <tt>LocalManifest</tt> instance. <tt>LocalManifest</tt> is a
+            concrete implementation of the abstract <tt>Manifest</tt> class that is used to
+            represent the source data in a clipboard transaction. In contrast, a
+            <tt>RemoteManifest</tt> represents data obtained from the clipboard. Local manifests
+            are created by an application, whereas remote manifests are created by the system.
+        </p>
+
+        <p>
+            A manifest encapsulates the content that may be placed on the clipboard by a Pivot
+            application. It can represent the data in a variety of "flavors": as text, as an image,
+            as a list of files, as a URL, or as a custom data format. An application may provide
+            one or more flavors depending on the nature of the data. An application that is
+            interested in consuming the data can then choose the most appropriate format based on
+            the available flavors.
+        </p>
+
+        <p>
+            Once the manifest has been created and populated, it is placed on the clipboard via
+            the <tt>Clipboard.setContent()</tt> method. It is now available for other applications
+            to consume.
+        </p>
+
+        <p>
+            The <tt>paste()</tt> method performs the opposite transaction. It retrieves the current
+            clipboard contents and checks for the presence of an image flavor. If available, it
+            extracts the image content and sets it as the source of the "destinationImageView"
+            component.
+        </p>
+    </body>
+</document>

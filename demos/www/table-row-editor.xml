@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document>
+    <properties>
+        <title>Table Row Editor</title>
+        <description>
+            An example of a table row editor that uses a slide effect to edit rows.
+        </description>
+    </properties>
+
+    <body>
+        <p>
+            This sample application demonstrates the use of a slide transition to bring up a table
+            view row editor.
+        </p>
+        <application class="org.apache.pivot.wtk.ScriptApplication" width="480" height="200">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>demos</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/demos/roweditor/row_editor_demo.bxml</src>
+                <resources>org.apache.pivot.demos.roweditor.RowEditorDemo</resources>
+            </startup-properties>
+        </application>
+        <p>
+            Users can double click on any row to bring up the editor. Pressing the Enter key or
+            clicking outside the bounds of the editor will save the edits, and pressing the Escape
+            key will cancel the edits.
+        </p>
+    </body>
+</document>

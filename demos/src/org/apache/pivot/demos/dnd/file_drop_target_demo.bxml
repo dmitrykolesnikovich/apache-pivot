@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<dnd:FileDropTargetDemo title="File Drop Target Demo" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:dnd="org.apache.pivot.demos.dnd"
+    xmlns:terra="org.apache.pivot.wtk.skin.terra"
+    xmlns="org.apache.pivot.wtk">
+    <TablePane styles="{verticalSpacing:6}">
+        <columns>
+            <TablePane.Column width="1*"/>
+        </columns>
+
+        <TablePane.Row height="1*">
+            <Border styles="{color:10}">
+                <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                    verticalScrollBarPolicy="fill_to_capacity">
+                    <TableView bxml:id="fileTableView" selectMode="multi"
+                        styles="{showHorizontalGridLines:false}">
+                        <columns>
+                            <TableView.Column name="name" width="3*" headerData="File">
+                                <cellRenderer>
+                                    <terra:TerraFileBrowserSkin.TableViewFileRenderer/>
+                                </cellRenderer>
+                            </TableView.Column>
+                            <TableView.Column name="size" width="1*" headerData="Size">
+                                <cellRenderer>
+                                    <terra:TerraFileBrowserSkin.TableViewFileRenderer/>
+                                </cellRenderer>
+                            </TableView.Column>
+                            <TableView.Column name="lastModified" width="2*" headerData="Modified">
+                                <cellRenderer>
+                                    <terra:TerraFileBrowserSkin.TableViewFileRenderer/>
+                                </cellRenderer>
+                            </TableView.Column>
+                        </columns>
+                    </TableView>
+
+                    <columnHeader>
+                        <TableViewHeader tableView="$fileTableView" styles="{headersPressable:false}"/>
+                    </columnHeader>
+                </ScrollPane>
+            </Border>
+        </TablePane.Row>
+        <TablePane.Row height="-1">
+            <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
+                <PushButton bxml:id="uploadButton" buttonData="Upload"
+                   enabled="false" styles="{minimumAspectRatio:3}"/>
+            </BoxPane>
+        </TablePane.Row>
+    </TablePane>
+</dnd:FileDropTargetDemo>

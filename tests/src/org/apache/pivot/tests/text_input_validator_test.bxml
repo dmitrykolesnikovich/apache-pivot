@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<TablePane styles="{padding:6, horizontalSpacing:8, verticalSpacing:8}"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns="org.apache.pivot.wtk">
+    <columns>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
+    </columns>
+
+    <TablePane.Row height="-1">
+        <Label text="Current Locale:"/>
+        <TextInput bxml:id="textinputLocale" editable="false"/>
+        <Label text="use separators from the current Locale"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="BigDecimal value"/>
+        <TextInput bxml:id="textinputComparableBigDecimal"/>
+        <Label text="any BigDecimal value (huge and precise math, but no infinite)" />
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="comparable range"/>
+        <TextInput bxml:id="textinputComparableRange"/>
+        <Label text="valid range: (same as float range, but using BigDecimal here)"
+            styles="{wrapText:true}"
+        />
+        <Label bxml:id="invalidComparableRangeLabel"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="double"/>
+        <TextInput bxml:id="textinputDouble"/>
+        <Label text="valid value: any double: ~4.94e-324 to ~1.79e+308 or &#x00B1;&#x221E;"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="float"/>
+        <TextInput bxml:id="textinputFloat"/>
+        <Label text="valid value: any float: ~1.40e-45 to ~3.40e+38 or &#x00B1;&#x221E;"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="float range"/>
+        <TextInput bxml:id="textinputFloatRange"/>
+        <Label text="valid range: 2.0 .. 123456789"/>
+        <Label bxml:id="invalidLabel"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="int range"/>
+        <TextInput bxml:id="textinputIntRange"/>
+        <Label text="valid range: 0 .. 100"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="date regex"/>
+        <TextInput bxml:id="textinputDateRegex"/>
+        <Label text="valid format: yyyy-mm-dd"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="custom boolean"/>
+        <TextInput bxml:id="textinputCustomBoolean"/>
+        <Label text="valid values: true, false"/>
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="not empty text"/>
+        <TextInput bxml:id="textinputNotEmptyText"/>
+        <Label text="valid values: any not empty text (note that it will be trimmed)"
+            styles="{wrapText:true}"
+        />
+    </TablePane.Row>
+    <TablePane.Row height="-1">
+        <Label text="empty text"/>
+        <TextInput bxml:id="textinputEmptyText"/>
+        <Label text="valid values: any empty text (note that it will be trimmed)"
+            styles="{wrapText:true}"
+        />
+    </TablePane.Row>
+</TablePane>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="accordions">
+    <properties>
+        <title>Accordions</title>
+    </properties>
+
+    <body>
+        <p>
+            Accordions serve a similar purpose to tab panes and card panes, only showing one
+            of a collection of components at a time. Like tab panes, accordions provide built-in
+            navigation support. However, rather than representing the content as a stack of
+            components, they are presented like the folds of an accordion, with headers for
+            navigating between panels.
+        </p>
+        <p>
+            The following application demonstrates the use of the <tt>Accordion</tt> component.
+            It is a simplified online checkout process consisting of three pages - shipping
+            info, payment info, and order summary:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="260" height="380">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/navigation/accordions.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            Note that, like <tt>TabPane</tt>, the default behavior of an accordion is to allow
+            the user to freely navigate between panels. However, in this example, the user is
+            only allowed to progress forward in the accordion by pressing the "Next" button.
+            This restriction is imposed programmatically by the application, since the content
+            of a subsequent page in such a checkout process may depend on the user's entries on
+            a previous page. The user may freely navigate backward at any point, however.
+            The last panel simulates the order confirmation by displaying an
+            <a href="activity-indicators.html">activity indicator</a>.
+        </p>
+
+        <p>
+            The BXML source for the example is shown below. It includes a number of external BXML
+            files that define the content of each panel:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/navigation/accordions.bxml">
+            <![CDATA[
+            <navigation:Accordions title="Accordions" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:navigation="org.apache.pivot.tutorials.navigation"
+                xmlns="org.apache.pivot.wtk">
+                <Accordion bxml:id="accordion" styles="{padding:0}">
+                    <bxml:include bxml:id="shippingPanel" src="shipping.bxml" Accordion.headerData="Shipping Information"/>
+                    <bxml:include bxml:id="paymentPanel" src="payment.bxml" Accordion.headerData="Payment Information"/>
+                    <bxml:include bxml:id="summaryPanel" src="summary.bxml" Accordion.headerData="Summary &amp; Confirmation"/>
+                </Accordion>
+            </navigation:Accordions>
+            ]]>
+        </source>
+
+        <p>
+            The Java source is as follows. The primary logic for maintaining the enabled state
+            of the panels is defined in the <tt>updateAccordion()</tt> method; an
+            <tt>AccordionSelectionListener</tt> is used to enable or disable panels when a
+            selection change transition is about to occur, rather than waiting until it is
+            complete, to provide a smoother user experience:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/navigation/Accordions.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.navigation;
+
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.collections.Sequence;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.util.Vote;
+            import org.apache.pivot.wtk.Accordion;
+            import org.apache.pivot.wtk.AccordionSelectionListener;
+            import org.apache.pivot.wtk.Component;
+            import org.apache.pivot.wtk.Window;
+
+            public class Accordions extends Window implements Bindable {
+                private Accordion accordion = null;
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    accordion = (Accordion)namespace.get("accordion");
+                    accordion.getAccordionSelectionListeners().add(new AccordionSelectionListener() {
+                        private int selectedIndex = -1;
+
+                        @Override
+                        public Vote previewSelectedIndexChange(Accordion accordion, int selectedIndex) {
+                            this.selectedIndex = selectedIndex;
+
+                            // Enable the next panel or disable the previous panel so the
+                            // transition looks smoother
+                            if (selectedIndex != -1) {
+                                int previousSelectedIndex = accordion.getSelectedIndex();
+                                if (selectedIndex > previousSelectedIndex) {
+                                    accordion.getPanels().get(selectedIndex).setEnabled(true);
+                                } else {
+                                    accordion.getPanels().get(previousSelectedIndex).setEnabled(false);
+                                }
+
+                            }
+
+                            return Vote.APPROVE;
+                        }
+
+                        @Override
+                        public void selectedIndexChangeVetoed(Accordion accordion, Vote reason) {
+                            if (reason == Vote.DENY
+                                && selectedIndex != -1) {
+                                Component panel = accordion.getPanels().get(selectedIndex);
+                                panel.setEnabled(!panel.isEnabled());
+                            }
+                        }
+
+                        @Override
+                        public void selectedIndexChanged(Accordion accordion, int previousSelection) {
+                            updateAccordion();
+                        }
+                    });
+
+                    updateAccordion();
+                }
+
+                private void updateAccordion() {
+                    int selectedIndex = accordion.getSelectedIndex();
+
+                    Sequence<Component> panels = accordion.getPanels();
+                    for (int i = 0, n = panels.getLength(); i < n; i++) {
+                        panels.get(i).setEnabled(i <= selectedIndex);
+                    }
+                }
+            }
+            ]]>
+        </source>
+    </body>
+</document>

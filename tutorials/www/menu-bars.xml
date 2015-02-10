@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="menu-bars">
+    <properties>
+        <title>Menu Bars</title>
+    </properties>
+
+    <body>
+        <p>
+            Menu bars are generally used to provide convenient access to major application
+            features. They act as a repository for top-level hierarchical menus, keeping the menus
+            out of sight until they are needed.
+        </p>
+
+        <p>
+            Like all other components, menu bars can actually be placed anywhere in an
+            application's user interface. However, they are most often located at the top of an
+            application's main window. Pivot provides framework-level support for simplifying the
+            task of defining a menu bar positioned in this way. The <tt>Frame</tt> class defines
+            a "menuBar" property that is handled specially by the application using the
+            <tt>configureMenuBar()</tt> and <tt>cleanupMenuBar()</tt> methods of the
+            <tt>MenuHandler</tt> interface. These methods are called by the framework as the focus
+            changes within a window, to allow the application to customize the contents of the menu
+            bar based on the currently focused component.
+        </p>
+
+        <p>
+            Note that for a keystroke to be processed (for example assigned to a Menu Item),
+            a component must have the focus to receive the key event and propagate it up the component hierarchy.
+            So, make sure that the window's content contains a focusable component, like a TextInput or PushButton.
+        </p>
+
+        <p>
+            The example application below shows a menu bar containing two common top-level menu
+            items: "File" and "Edit" (note that the applet is signed since it makes use of the
+            <tt>FileBrowserSheet</tt> component, which requires access to the local file system):
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="640" height="480">
+            <libraries signed="true">
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/menus/menu_bars.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            Each sub-menu item is associated with an <tt>Action</tt> that is executed when the
+            item is selected. For example, the action attached to the "File > Open" menu item
+            simulates opening a document by showing a file browser sheet and adding a new tab to
+            the application's tab pane. Each component in the "document" has a menu handler
+            attached to it that configures the menu contents as appropriate for the current
+            selection. When a text input component has the focus, the "Paste" menu item is enabled.
+            If text is selected in the text input, the "Cut" and "Copy" menu items are also
+            enabled.
+        </p>
+
+        <p>
+            The BXML source for this example is shown below. It creates the initial menu structure
+            as well as the tab pane that will host the simulated documents. It also defines a set
+            of "action mappings" in the root frame's "actionMappings" sequence. Action mappings
+            associate keystrokes with actions; when a keystroke matching an action in the sequence
+            is processed by the window, the action is invoked. Action mappings are often called
+            "keyboard shortcuts".
+        </p>
+
+        <p>
+            Note that the actions in this example are associated with the "CMD" key. This is a
+            Pivot-specific, platform-independent modifier. It maps to the Control key (CTRL)
+            on Windows and Linux and the Command key (META) on Mac OS X:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/menus/menu_bars.bxml">
+            <![CDATA[
+            <menus:MenuBars title="Menu Bars" maximized="true"
+                styles="{padding:{top:0, left:4, bottom:4, right:4}, showWindowControls:false}"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:content="org.apache.pivot.wtk.content"
+                xmlns:menus="org.apache.pivot.tutorials.menus"
+                xmlns="org.apache.pivot.wtk">
+                <bxml:define>
+                    <FileBrowserSheet bxml:id="fileBrowserSheet"/>
+                </bxml:define>
+
+                <actionMappings>
+                    <Window.ActionMapping action="fileNew" keyStroke="CMD-N"/>
+                    <Window.ActionMapping action="fileOpen" keyStroke="CMD-O"/>
+                </actionMappings>
+
+                <menuBar>
+                    <MenuBar>
+                        <MenuBar.Item buttonData="File">
+                            <Menu>
+                                <Menu.Section>
+                                    <Menu.Item action="fileNew">
+                                        <buttonData>
+                                            <content:MenuItemData text="New" keyboardShortcut="CMD-N"/>
+                                        </buttonData>
+                                    </Menu.Item>
+
+                                    <Menu.Item action="fileOpen">
+                                        <buttonData>
+                                            <content:MenuItemData text="Open" keyboardShortcut="CMD-O"/>
+                                        </buttonData>
+                                    </Menu.Item>
+                                </Menu.Section>
+                            </Menu>
+                        </MenuBar.Item>
+
+                        <MenuBar.Item buttonData="Edit">
+                            <Menu>
+                                <Menu.Section>
+                                    <Menu.Item action="cut">
+                                        <buttonData>
+                                            <content:MenuItemData text="Cut" keyboardShortcut="CMD-X"/>
+                                        </buttonData>
+                                    </Menu.Item>
+                                    <Menu.Item action="copy">
+                                        <buttonData>
+                                            <content:MenuItemData text="Copy" keyboardShortcut="CMD-C"/>
+                                        </buttonData>
+                                    </Menu.Item>
+                                    <Menu.Item action="paste">
+                                        <buttonData>
+                                            <content:MenuItemData text="Paste" keyboardShortcut="CMD-V"/>
+                                        </buttonData>
+                                    </Menu.Item>
+                                </Menu.Section>
+                            </Menu>
+                        </MenuBar.Item>
+                    </MenuBar>
+                </menuBar>
+
+                <Border styles="{backgroundColor:null, padding:2}">
+                    <TabPane bxml:id="tabPane"/>
+                </Border>
+            </menus:MenuBars>
+            ]]>
+        </source>
+
+        <p>
+            The Java source for the example is shown below. In the constructor, the application's
+            actions are created and added to the global action dictionary. Note that, since the
+            BXML file refers to the actions by ID, it is essential that the actions be available
+            before the BXML is read.
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/menus/MenuBars.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.menus;
+
+            import java.io.IOException;
+            import java.net.URL;
+
+            import org.apache.pivot.beans.BXML;
+            import org.apache.pivot.beans.BXMLSerializer;
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.serialization.SerializationException;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Action;
+            import org.apache.pivot.wtk.Border;
+            import org.apache.pivot.wtk.Component;
+            import org.apache.pivot.wtk.FileBrowserSheet;
+            import org.apache.pivot.wtk.Frame;
+            import org.apache.pivot.wtk.MenuBar;
+            import org.apache.pivot.wtk.MenuHandler;
+            import org.apache.pivot.wtk.TabPane;
+            import org.apache.pivot.wtk.TextInput;
+            import org.apache.pivot.wtk.TextInputSelectionListener;
+            import org.apache.pivot.wtk.TextInputContentListener;
+
+            public class MenuBars extends Frame implements Bindable {
+                @BXML private FileBrowserSheet fileBrowserSheet;
+                @BXML private TabPane tabPane = null;
+
+                private MenuHandler menuHandler = new MenuHandler.Adapter() {
+                    TextInputContentListener textInputTextListener = new TextInputContentListener.Adapter() {
+                        @Override
+                        public void textChanged(TextInput textInput) {
+                            updateActionState(textInput);
+                        }
+                    };
+
+                    TextInputSelectionListener textInputSelectionListener = new TextInputSelectionListener() {
+                        @Override
+                        public void selectionChanged(TextInput textInput, int previousSelectionStart,
+                            int previousSelectionLength) {
+                            updateActionState(textInput);
+                        }
+                    };
+
+                    @Override
+                    public void configureMenuBar(Component component, MenuBar menuBar) {
+                        if (component instanceof TextInput) {
+                            TextInput textInput = (TextInput)component;
+
+                            updateActionState(textInput);
+                            Action.getNamedActions().get("paste").setEnabled(true);
+
+                            textInput.getTextInputContentListeners().add(textInputTextListener);
+                            textInput.getTextInputSelectionListeners().add(textInputSelectionListener);
+                        } else {
+                            Action.getNamedActions().get("cut").setEnabled(false);
+                            Action.getNamedActions().get("copy").setEnabled(false);
+                            Action.getNamedActions().get("paste").setEnabled(false);
+                        }
+                    }
+
+                    @Override
+                    public void cleanupMenuBar(Component component, MenuBar menuBar) {
+                        if (component instanceof TextInput) {
+                            TextInput textInput = (TextInput)component;
+                            textInput.getTextInputContentListeners().remove(textInputTextListener);
+                            textInput.getTextInputSelectionListeners().remove(textInputSelectionListener);
+                        }
+                    }
+
+                    private void updateActionState(TextInput textInput) {
+                        Action.getNamedActions().get("cut").setEnabled(textInput.getSelectionLength() > 0);
+                        Action.getNamedActions().get("copy").setEnabled(textInput.getSelectionLength() > 0);
+                    }
+                };
+
+                public MenuBars() {
+                    Action.getNamedActions().put("fileNew", new Action() {
+                        @Override
+                        public void perform(Component source) {
+                            BXMLSerializer bxmlSerializer = new BXMLSerializer();
+                            bxmlSerializer.getNamespace().put("menuHandler", menuHandler);
+
+                            Component tab;
+                            try {
+                                tab = new Border((Component)bxmlSerializer.readObject(MenuBars.class, "document.bxml"));
+                            } catch (IOException exception) {
+                                throw new RuntimeException(exception);
+                            } catch (SerializationException exception) {
+                                throw new RuntimeException(exception);
+                            }
+
+                            tabPane.getTabs().add(tab);
+                            TabPane.setTabData(tab, "Document " + tabPane.getTabs().getLength());
+                            tabPane.setSelectedIndex(tabPane.getTabs().getLength() - 1);
+                        }
+                    });
+
+                    Action.getNamedActions().put("fileOpen", new Action() {
+                        @Override
+                        public void perform(Component source) {
+                            fileBrowserSheet.open(MenuBars.this);
+                        }
+                    });
+
+                    Action.getNamedActions().put("cut", new Action(false) {
+                        @Override
+                        public void perform(Component source) {
+                            TextInput textInput = (TextInput)MenuBars.this.getFocusDescendant();
+                            textInput.cut();
+                        }
+                    });
+
+                    Action.getNamedActions().put("copy", new Action(false) {
+                        @Override
+                        public void perform(Component source) {
+                            TextInput textInput = (TextInput)MenuBars.this.getFocusDescendant();
+                            textInput.copy();
+                        }
+                    });
+
+                    Action.getNamedActions().put("paste", new Action(false) {
+                        @Override
+                        public void perform(Component source) {
+                            TextInput textInput = (TextInput)MenuBars.this.getFocusDescendant();
+                            textInput.paste();
+                        }
+                    });
+                }
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            The class also defines an anonymous inner implementation of the <tt>MenuHandler</tt>
+            interface that is used to configure the menu bar based on the focused component. In
+            <tt>configureMenuBar()</tt>, the actions associated with the "cut", "copy", and "paste"
+            operations are enabled and disabled as appropriate. Listeners are also added to the
+            focused component (if it is a <tt>TextInput</tt>) to ensure that the action's state
+            accurately reflects the current selection. The listeners are removed in
+            <tt>cleanupMenuBar()</tt>, if necessary.
+        </p>
+
+        <p>
+            Note that menu bar configuration via <tt>MenuHandler</tt> isn't limited to enabling or
+            disabling actions - new menu items can be dynamically created, menu item selection
+            state can be changed, etc. However, unlike context menus, the framework does not
+            automatically clean up any changes made to the menu bar. It is up to the application
+            to ensure that the menu bar remains in a consistent state using the
+            <tt>configureMenuBar()</tt> and <tt>cleanupMenuBar()</tt> methods.
+        </p>
+    </body>
+</document>

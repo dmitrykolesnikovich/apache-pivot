@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<Window maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:tools.xml="org.apache.pivot.demos.xml"
+    xmlns="org.apache.pivot.wtk">
+    <bxml:script src="xml_viewer.js"/>
+
+    <Border styles="{padding:4}">
+        <SplitPane splitRatio="0.6">
+            <left>
+                <Border styles="{color:10}">
+                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                        verticalScrollBarPolicy="fill_to_capacity">
+                        <TreeView bxml:id="treeView" dropTarget="$treeViewDropTarget">
+                            <nodeRenderer>
+                                <tools.xml:NodeRenderer/>
+                            </nodeRenderer>
+
+                            <componentKeyListeners>
+                                <![CDATA[
+                                importPackage(org.apache.pivot.wtk);
+                                function keyPressed(component, keyCode, keyLocation) {
+                                    if (keyCode == Keyboard.KeyCode.V
+                                        && Keyboard.isPressed(Platform.getCommandModifier())) {
+                                        application.paste();
+                                    }
+                                }
+                                ]]>
+                            </componentKeyListeners>
+
+                            <treeViewSelectionListeners>
+                                <![CDATA[
+                                function selectedPathsChanged(treeView, previousSelectedPaths) {
+                                    application.updateProperties();
+                                }
+                                ]]>
+                            </treeViewSelectionListeners>
+                        </TreeView>
+                    </ScrollPane>
+                </Border>
+            </left>
+
+            <right>
+                <CardPane bxml:id="propertiesCardPane">
+                    <SplitPane orientation="vertical" splitRatio="0.2">
+                        <top>
+                            <Border styles="{color:10}">
+                                <ScrollPane horizontalScrollBarPolicy="fill"
+                                    verticalScrollBarPolicy="fill_to_capacity">
+                                    <TableView bxml:id="namespacesTableView" selectMode="none">
+                                        <columns>
+                                            <TableView.Column name="prefix" width="1*" headerData="Prefix"/>
+                                            <TableView.Column name="uri" width="2*" headerData="URI"/>
+                                        </columns>
+                                    </TableView>
+
+                                    <columnHeader>
+                                        <TableViewHeader tableView="$namespacesTableView"
+                                            styles="{headersPressable:false}"/>
+                                    </columnHeader>
+                                </ScrollPane>
+                            </Border>
+                        </top>
+
+                        <bottom>
+                            <Border styles="{color:10}">
+                                <ScrollPane horizontalScrollBarPolicy="fill"
+                                    verticalScrollBarPolicy="fill_to_capacity">
+                                    <TableView bxml:id="attributesTableView" selectMode="none">
+                                        <columns>
+                                            <TableView.Column name="name" width="1*" headerData="Name"/>
+                                            <TableView.Column name="value" width="1*" headerData="Value"/>
+                                        </columns>
+                                    </TableView>
+
+                                    <columnHeader>
+                                        <TableViewHeader tableView="$attributesTableView"
+                                            styles="{headersPressable:false}"/>
+                                    </columnHeader>
+                                </ScrollPane>
+                            </Border>
+                        </bottom>
+                    </SplitPane>
+
+                    <Border styles="{color:10}">
+                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                            verticalScrollBarPolicy="fill_to_capacity">
+                            <TextArea bxml:id="textArea" editable="false" styles="{wrapText:false}"/>
+                        </ScrollPane>
+                    </Border>
+                </CardPane>
+            </right>
+        </SplitPane>
+    </Border>
+</Window>

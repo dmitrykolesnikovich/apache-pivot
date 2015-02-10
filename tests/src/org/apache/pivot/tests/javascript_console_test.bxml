@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<Window bxml:id="window"
+    title="%title" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns="org.apache.pivot.wtk"
+>
+    <bxml:script src="javascript_console_test.js"/>
+
+    <bxml:script>
+    <![CDATA[
+    // note that this script could be moved in an external js file, like that already included in this file ...
+    log("inline script 1 - start");
+
+    // JS variables for (remote) resources
+    // needed for test 2 and 4
+    var resourcesBaseURL   =
+        // "";
+        // "file:///D:/work/pivot/site/trunk/deploy/assets-for-tests" + "/";  // local test
+        // "http://pivot.apache.org/assets-for-tests" + "/";  // production url
+        "http://pivot.apache.org/assets-for-tests" + "/";
+    var frameName =
+        // "frame.bxml";    // the first level bxml
+        // "palette.bxml";  // the second level bxml (loaded usually be frame.bxml), just to test here directly
+        "frame.bxml";
+    var frameURL  = resourcesBaseURL + frameName;
+    // note that bxml files must have the MIME Type "application/bxml" (as requested by BXMLSerializer),
+    // or (BXMLSerializer) will try to get it from its file extension ...
+
+    // assign a label value to a JS variable
+    // var valueFromLabel = "%labelText";  // note that this doesn't work as expected, must be handled from the bxmlSerializer ...
+    // log("valueFromLabel (direct access) = \"" + valueFromLabel + "\"");
+
+    log("inline script 1 - end");
+    ]]>
+    </bxml:script>
+
+    <bxml:define>
+        <!-- temp, then keep these definitions commented, do NOT removed them from here //-->
+        <bxml:include bxml:id="testLocalFrame"  src="script_application_test.frame.bxml"/>
+
+        <!--
+        // test 1, ok
+        // load the bxml file from a fixed URL
+        // note that the bxml file will be loaded when this bxml file is loaded, so at application startup time, slowing it ...
+        <bxml:include bxml:id="testRemoteFrame" src="http://pivot.apache.org/assets-for-tests/frame.bxml"/>
+
+        // test 2, ok
+        // load the bxml file from a URL set in a JS variable, feature just added
+        // note that the bxml file will be loaded when this bxml file is loaded, so at application startup time, slowing it ...
+        <bxml:include bxml:id="testRemoteFrame" src="$frameURL"/>
+
+        // test 3, no, it's not possible
+        // try to set src later in JS ...
+        // <bxml:include bxml:id="testRemoteFrame" src=""/>
+        // <bxml:include bxml:id="testRemoteFrame"/>
+        //-->
+    </bxml:define>
+
+    <bxml:script>
+    <![CDATA[
+    // note that this script could be moved in an external js file, like that already included in this file ...
+    // importPackage(org.apache.pivot.collections);  // for collections
+    importPackage(org.apache.pivot.beans);  // for BXMLSerializer
+    importPackage(org.apache.pivot.util);   // for some useful stuff
+    importPackage(org.apache.pivot.wtk);    // for application and other wtk classes
+
+    log("inline script 2 - start");
+
+    // test 4, ok
+    // define the variable in JS, and load it by instancing Java classes from here
+    // log("frameURL is \"" + frameURL + "\"");  // show that the required value is already defined
+    log("application is " + application);  // reference to the application itself, set in main class, in Java Code
+
+    // JS variables for (remote) resources
+    var bxmlSerializer = new BXMLSerializer();  // trick, create a new instance of BXMLSerializer ...
+    log("bxmlSerializer is " + bxmlSerializer);
+    bxmlSerializer.getNamespace().put("application", application);  // add a reference to application even in this instance of BXMLSerializer ...
+    log("put a reference to application in serializer namespace");
+    bxmlSerializer.getNamespace().put("resourcesBaseURL", resourcesBaseURL);  // add a reference to resourcesBaseURL, so included bxml files could use it ...
+    log("put a reference to resourcesBaseURL in serializer namespace");
+
+    // load the window/frame, but using an utility method defined in the application ...
+    // important: remember that to load a remote file it's necessary to use the (more generic) version that takes an URL (maybe even to load a local file),
+    // and not the version that takes the filename string ...
+    log("load the window/frame now, by JS code (calling Java code from the application) ...");
+    var loadedWindow = application.loadWindowFromURL(frameURL, bxmlSerializer);
+    // var loadedWindow = application.loadWindowFromBaseURLAndFilename(resourcesBaseURL, frameName, bxmlSerializer);  // maybe add this method in future ...
+    log("loadedWindow is " + loadedWindow + ", and its JavaScript typeof here is " + typeof loadedWindow);  // note that typeof loadedWindow is object
+
+    var testRemoteFrame = loadedWindow;
+    // log formatted info but using a static method defined in the application, just for test ...
+    // note that this call is done in the usual (non-static) way, and works the same even from here
+    application.logObject(testRemoteFrame);
+
+    // decode and assign a label value to a JS variable (from the usual json resource file just used)
+    // var valueFromLabel = bxmlSerializer.getNamespace().get("labelText");  // get the label value from the bxmlSerializer, but doesn't work here (in an all-JS block)...
+    // working solution: get from resources, and to simplify things here use a Java helper method, but should be possible to do all from here ...
+    var valueFromLabel =   // get the label value from resources
+        // application.getLabel("labelText"); // calling the application method directly ...
+        decodeLabel("labelText");  // using a JS wrapper ...
+    log("valueFromLabel (access via dedicated Java Helper) = \"" + valueFromLabel + "\"");
+
+    // decode some labels and set as list data, then reference it in the component ...
+    var templateButtonListData = buildListDataFromLabels();
+
+
+    // test 5, TODO
+    // comment test 4, and copy its source inside the switch statements below (if possible), to make it really dynamic ...
+
+
+    // test 6, TODO
+    // isolate a JS snippet (but self-contained) derive from test 4, and
+    // find a way to execute it as the text written in the textArea in a JS interpreter,
+    // then put it in a fixed template, and generalize it inside this test/sample application ...
+
+    log("inline script 2 - end");
+    ]]>
+    </bxml:script>
+
+    <TablePane styles="{padding:6, horizontalSpacing:6, verticalSpacing:8}">
+        <columns>
+            <TablePane.Column width="100"/>
+            <TablePane.Column width="1*"/>
+            <TablePane.Column width="50"/>
+        </columns>
+
+        <TablePane.Row height="-1">
+            <BoxPane orientation="horizontal" TablePane.columnSpan="3">
+                <Label styles="{horizontalAlignment:'center', verticalAlignment:'center'}" text="%labelInfo"
+                />
+                <Label text=" " />
+
+                <Label text="%labelTemplates"/>
+                <!-- // ok, using static data values
+                <ListButton bxml:id="templateButton"
+                    listData="[' - Choose a template - ', 'Open Frame Local', 'Open Frame Remote (from Pivot Web Site)']"
+                    selectedIndex="-1"
+                >
+                //-->
+                <!-- // new, using decoded labels as data values -->
+                <ListButton bxml:id="templateButton"
+                    listData="$templateButtonListData"
+                    selectedIndex="-1"
+                >
+                    <listButtonSelectionListeners>
+                        function selectedIndexChanged(listButton, previousSelectedIndex) {
+                            var selectedIndex = listButton.selectedIndex;
+                            // log("Previous Selection was " + previousSelectedIndex + ", now Selected " + selectedIndex);
+
+                            var templateText = "";
+                            // simple logic to set template text, just for sample
+                            switch(selectedIndex) {
+                                // case 0:  // handle with default ...
+                                case 1:
+// TODO: put the right text to run in console ...
+                                    templateText = "testLocalFrame.open(window);";
+                                    testLocalFrame.open(window);  // temp, then keep this commented
+                                    break;
+                                case 2:
+// TODO: put the right text to run in console ...
+                                    templateText = "testRemoteFrame.open(window);";
+                                    // note that testRemoteFrame is already loaded, so here it's only to display it ...
+                                    testRemoteFrame.open(window);  // temp, then keep this commented
+// TODO: test 5 goes here ...
+                                    break;
+                                default:
+                                    clearConsole();
+                                    break;
+                            }
+                            textJSSource.text = templateText;
+                        }
+                    </listButtonSelectionListeners>
+                </ListButton>
+                <Label text=" " />
+
+                <PushButton bxml:id="runButton"   buttonData="%labelRun" ButtonPressListener.buttonPressed="runConsole()" enabled="false" />
+                <PushButton bxml:id="clearButton" buttonData="%labelClear">
+                    <buttonPressListeners>
+                    function buttonPressed(button) {
+                        clearConsole();
+                    }
+                    </buttonPressListeners>
+                </PushButton>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Label styles="{horizontalAlignment:'right', verticalAlignment:'center'}" text="%labelJSSource"/>
+            <Border>
+                <ScrollPane horizontalScrollBarPolicy="fill" verticalScrollBarPolicy="fill_to_capacity"
+                    preferredHeight="200"
+                >
+                    <TextArea bxml:id="textJSSource"
+                        styles="{wrapText:false}"
+                        editable="true"
+                        text=""
+                    >
+                       <textAreaContentListeners>
+                        function textChanged(textArea) {
+                            var numChars = textArea.characterCount;
+                            // log("numChars = " + numChars);
+                            if (numChars > 0) {
+                                // runButton.enabled = true;  // ok
+                                runButton.setEnabled(true);   // explicit usage of the setter
+                            }
+                        }
+                        </textAreaContentListeners>
+                    </TextArea>
+                </ScrollPane>
+            </Border>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Label styles="{horizontalAlignment:'right', verticalAlignment:'center'}" text="%labelJSOutput"/>
+            <Border>
+                <ScrollPane horizontalScrollBarPolicy="fill" verticalScrollBarPolicy="fill_to_capacity"
+                    preferredHeight="100"
+                >
+                    <TextArea bxml:id="textJSOutput"
+                        styles="{wrapText:false}"
+                        editable="false"
+                        text=""
+                    >
+                    </TextArea>
+                </ScrollPane>
+            </Border>
+        </TablePane.Row>
+        <TablePane.Row height="-1">
+            <Label styles="{horizontalAlignment:'right', verticalAlignment:'center'}" text="%labelStatus"/>
+            <Label bxml:id="textStatus" styles="{horizontalAlignment:'left', verticalAlignment:'center'}" text=""/>
+        </TablePane.Row>
+    </TablePane>
+
+</Window>

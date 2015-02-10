@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<explorer:ComponentExplorerWindow title="%title" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:content="org.apache.pivot.wtk.content"
+    xmlns:tools="org.apache.pivot.tutorials.explorer.tools"
+    xmlns:explorer="org.apache.pivot.tutorials.explorer"
+    xmlns="org.apache.pivot.wtk">
+    <CardPane styles="{padding:3}">
+        <SplitPane bxml:id="splitPane" orientation="horizontal" splitRatio="0.25">
+            <left>
+                <TabPane>
+                    <Border TabPane.tabData="%explorerPane.label">
+                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                            <TreeView bxml:id="treeView">
+                                <nodeRenderer>
+                                    <content:TreeViewNodeRenderer
+                                        styles="{padding:1}"/>
+                                </nodeRenderer>
+
+                                <treeData>
+                                    <content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.basic"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="Label"
+                                                icon="@../page_white.png"
+                                                src="@label.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="ImageView"
+                                                icon="@../page_white.png"
+                                                src="@image_view.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.buttons"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="PushButton"
+                                                icon="@../page_white.png"
+                                                src="@push_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="RadioButton"
+                                                icon="@../page_white.png"
+                                                src="@radio_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Checkbox"
+                                                icon="@../page_white.png"
+                                                src="@checkbox.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="LinkButton"
+                                                icon="@../page_white.png"
+                                                src="@link_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.lists"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="ListView"
+                                                icon="@../page_white.png"
+                                                src="@list_view.bxml"
+                                                horizontalScrollBarPolicy="fill_to_capacity"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="ListButton"
+                                                icon="@../page_white.png"
+                                                src="@list_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.text"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="TextInput"
+                                                icon="@../page_white.png"
+                                                src="@text_input.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="TextArea"
+                                                icon="@../page_white.png"
+                                                src="@text_area.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill_to_capacity"/>
+                                            <explorer:ComponentNode
+                                                text="TextPane"
+                                                icon="@../page_white.png"
+                                                src="@text_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill_to_capacity"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.separators"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="Separator"
+                                                icon="@../page_white.png"
+                                                src="@separator.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.layout"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="FlowPane"
+                                                icon="@../page_white.png"
+                                                src="@flow_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="BoxPane"
+                                                icon="@../page_white.png"
+                                                src="@box_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="FillPane"
+                                                icon="@../page_white.png"
+                                                src="@fill_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="TablePane"
+                                                icon="@../page_white.png"
+                                                src="@table_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="GridPane"
+                                                icon="@../page_white.png"
+                                                src="@grid_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="Border"
+                                                icon="@../page_white.png"
+                                                src="@border.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="StackPane"
+                                                icon="@../page_white.png"
+                                                src="@stack_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="SplitPane"
+                                                icon="@../page_white.png"
+                                                src="@split_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="Form"
+                                                icon="@../page_white.png"
+                                                src="@form.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Panel"
+                                                icon="@../page_white.png"
+                                                src="@panel.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.navigation"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="CardPane"
+                                                icon="@../page_white.png"
+                                                src="@card_pane.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill"/>
+                                            <explorer:ComponentNode
+                                                text="TabPane"
+                                                icon="@../page_white.png"
+                                                src="@tab_pane.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Accordion"
+                                                icon="@../page_white.png"
+                                                src="@accordion.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Expander"
+                                                icon="@../page_white.png"
+                                                src="@expander.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Rollup"
+                                                icon="@../page_white.png"
+                                                src="@rollup.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <content:TreeBranch
+                                                text="%explorerPane.branches.viewports"
+                                                icon="@../folder.png">
+                                                <explorer:ComponentNode
+                                                    text="ScrollPane"
+                                                    icon="@../page_white.png"
+                                                    src="@scroll_pane.bxml"
+                                                    horizontalScrollBarPolicy="fill"
+                                                    verticalScrollBarPolicy="fill"/>
+                                                <explorer:ComponentNode
+                                                    text="Panorama"
+                                                    icon="@../page_white.png"
+                                                    src="@panorama.bxml"
+                                                    horizontalScrollBarPolicy="fill"
+                                                    verticalScrollBarPolicy="fill"/>
+                                            </content:TreeBranch>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.progress"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="Meter"
+                                                icon="@../page_white.png"
+                                                src="@meter.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="ActivityIndicator"
+                                                icon="@../page_white.png"
+                                                src="@activity_indicator.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.boundedRange"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="ScrollBar"
+                                                icon="@../page_white.png"
+                                                src="@scroll_bar.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Slider"
+                                                icon="@../page_white.png"
+                                                src="@slider.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="Spinner"
+                                                icon="@../page_white.png"
+                                                src="@spinner.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.calendars"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="Calendar"
+                                                icon="@../page_white.png"
+                                                src="@calendar.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="CalendarButton"
+                                                icon="@../page_white.png"
+                                                src="@calendar_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.colorChoosers"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="ColorChooser"
+                                                icon="@../page_white.png"
+                                                src="@color_chooser.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="ColorChooserButton"
+                                                icon="@../page_white.png"
+                                                src="@color_chooser_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.menus"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="MenuBar"
+                                                icon="@../page_white.png"
+                                                src="@menu_bar.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                            <explorer:ComponentNode
+                                                text="MenuButton"
+                                                icon="@../page_white.png"
+                                                src="@menu_button.bxml"
+                                                horizontalScrollBarPolicy="auto"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.tables"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="TableView"
+                                                icon="@../page_white.png"
+                                                src="@table_view.bxml"
+                                                horizontalScrollBarPolicy="fill_to_capacity"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.trees"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="TreeView"
+                                                icon="@../page_white.png"
+                                                src="@tree_view.bxml"
+                                                horizontalScrollBarPolicy="fill_to_capacity"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                        <content:TreeBranch
+                                            text="%explorerPane.branches.fileBrowsing"
+                                            icon="@../folder.png">
+                                            <explorer:ComponentNode
+                                                text="FileBrowser"
+                                                icon="@../page_white.png"
+                                                src="@file_browser.bxml"
+                                                horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="auto"/>
+                                        </content:TreeBranch>
+                                    </content:TreeBranch>
+                                </treeData>
+                            </TreeView>
+                        </ScrollPane>
+                    </Border>
+                </TabPane>
+            </left>
+            <right>
+                <SplitPane orientation="vertical" splitRatio="0.6">
+                    <top>
+                        <SplitPane orientation="horizontal" splitRatio="0.5">
+                            <left>
+                                <TabPane>
+                                    <Border TabPane.tabData="%contentPane.visualizationLabel">
+                                        <ScrollPane bxml:id="contentScrollPane">
+                                            <Border bxml:id="contentPane"
+                                                styles="{thickness:0, padding:6}"/>
+                                        </ScrollPane>
+                                    </Border>
+                                    <Border TabPane.tabData="%contentPane.bxmlSourceLabel">
+                                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                                            verticalScrollBarPolicy="fill_to_capacity">
+                                            <TextArea bxml:id="sourceTextArea"
+                                                editable="false"
+                                                styles="{wrapText:false, font:'Courier 10'}"/>
+                                        </ScrollPane>
+                                    </Border>
+
+                                    <corner>
+                                        <BoxPane styles="{padding:{right:6},
+                                            horizontalAlignment:'right', fill:true}">
+                                            <MenuButton tooltipText="%contentPane.scrollBarPolicy.tooltip" styles="{toolbar:true,
+                                                padding:{top:1, left:2, bottom:1, right:2}}">
+                                                <bxml:define>
+                                                    <ButtonGroup bxml:id="horizontalScrollBarPolicyGroup"/>
+                                                    <ButtonGroup bxml:id="verticalScrollBarPolicyGroup"/>
+                                                </bxml:define>
+                                                <buttonData>
+                                                    <content:ButtonData icon="@preferences-system.png"/>
+                                                </buttonData>
+
+                                                <Menu>
+                                                    <Menu.Section>
+                                                        <Menu.Item buttonData="%contentPane.scrollBarPolicy.horizontal">
+                                                            <Menu>
+                                                                <Menu.Section>
+                                                                    <Menu.Item bxml:id="horizontalAutoButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$horizontalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.auto"/>
+                                                                    <Menu.Item bxml:id="horizontalFillButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$horizontalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.fill"/>
+                                                                    <Menu.Item bxml:id="horizontalFillToCapacityButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$horizontalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.fillToCapacity"/>
+                                                                    <Menu.Item bxml:id="horizontalNeverButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$horizontalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.never"/>
+                                                                    <Menu.Item bxml:id="horizontalAlwaysButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$horizontalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.always"/>
+                                                                </Menu.Section>
+                                                            </Menu>
+                                                        </Menu.Item>
+                                                        <Menu.Item buttonData="%contentPane.scrollBarPolicy.vertical">
+                                                            <Menu>
+                                                                <Menu.Section>
+                                                                    <Menu.Item bxml:id="verticalAutoButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$verticalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.auto"/>
+                                                                    <Menu.Item bxml:id="verticalFillButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$verticalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.fill"/>
+                                                                    <Menu.Item bxml:id="verticalFillToCapacityButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$verticalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.fillToCapacity"/>
+                                                                    <Menu.Item bxml:id="verticalNeverButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$verticalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.never"/>
+                                                                    <Menu.Item bxml:id="verticalAlwaysButton"
+                                                                        toggleButton="true"
+                                                                        buttonGroup="$verticalScrollBarPolicyGroup"
+                                                                        buttonData="%contentPane.scrollBarPolicy.always"/>
+                                                                </Menu.Section>
+                                                            </Menu>
+                                                        </Menu.Item>
+                                                    </Menu.Section>
+                                                </Menu>
+                                            </MenuButton>
+                                        </BoxPane>
+                                    </corner>
+                                </TabPane>
+                            </left>
+                            <right>
+                                <TabPane bxml:id="inspectorTabPane">
+                                    <Border TabPane.tabData="%inspectorPane.propertiesLabel">
+                                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                                            <CardPane styles="{padding:10}">
+                                                <tools:ComponentPropertyInspector
+                                                    bxml:id="componentPropertyInspector"/>
+                                            </CardPane>
+                                        </ScrollPane>
+                                    </Border>
+                                    <Border TabPane.tabData="%inspectorPane.stylesLabel">
+                                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                                                <CardPane styles="{padding:10}">
+                                                    <tools:ComponentStyleInspector
+                                                        bxml:id="componentStyleInspector"/>
+                                                </CardPane>
+                                        </ScrollPane>
+                                    </Border>
+                                </TabPane>
+                            </right>
+                        </SplitPane>
+                    </top>
+                    <bottom>
+                        <TabPane>
+                            <tools:EventLogger bxml:id="eventLogger"
+                                TabPane.tabData="%eventLoggerPane.label"
+                                TabPane.tooltipText="%eventLoggerPane.labelTooltip"
+                            />
+                            <corner>
+                                <BoxPane styles="{padding:{right:6},
+                                    horizontalAlignment:'right', fill:true}"
+                                >
+                                    <Label text="%eventLoggerPane.buttonsDescription"
+                                        styles="{verticalAlignment:'center'}"
+                                    />
+                                    <PushButton styles="{toolbar:'false'}"
+                                        buttonData="%eventLoggerPane.selectAll"
+                                        tooltipText="%eventLoggerPane.selectAllEvents"
+                                        ButtonPressListener.buttonPressed="eventLogger.selectAllEvents(true);"
+                                    />
+                                    <PushButton styles="{toolbar:'false'}"
+                                        buttonData="%eventLoggerPane.deselectAll"
+                                        tooltipText="%eventLoggerPane.deselectAllEvents"
+                                        ButtonPressListener.buttonPressed="eventLogger.selectAllEvents(false);"
+                                    />
+                                    <PushButton
+                                        buttonData="%eventLoggerPane.clear"
+                                        tooltipText="%eventLoggerPane.clearTooltip"
+                                        ButtonPressListener.buttonPressed="eventLogger.clearLog();"
+                                    />
+                                </BoxPane>
+                            </corner>
+                        </TabPane>
+                    </bottom>
+                </SplitPane>
+            </right>
+        </SplitPane>
+    </CardPane>
+</explorer:ComponentExplorerWindow>

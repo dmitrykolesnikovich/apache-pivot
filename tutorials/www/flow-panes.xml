@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="flow-panes">
+    <properties>
+        <title>Flow Panes</title>
+    </properties>
+
+    <body>
+        <p>
+            Flow panes arrange components in a horizontal line, wrapping when the contents don't
+            fit on a single line. Components may be horizontally aligned to left, right, or center
+            when there is space left over within a given line, and may optionally be vertically
+            aligned by to their baselines.
+        </p>
+
+        <p>
+            The following example demonstrates the use of the <tt>FlowPane</tt> container. The
+            buttons on the right can be used to modify the alignment properties. A
+            <tt>BaselineDecorator</tt> is used to highlight the flow pane's baseline. This
+            decorator draws a red line across a component's baseline. If the component does not
+            have a baseline, it draws a blue line across the component's vertical midpoint:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="512" height="240">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/layout/flow_panes.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML source for this example is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/layout/flow_panes.bxml">
+            <![CDATA[
+            <layout:FlowPanes title="Flow Panes" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:effects="org.apache.pivot.wtk.effects"
+                xmlns:layout="org.apache.pivot.tutorials.layout"
+                xmlns="org.apache.pivot.wtk">
+                <SplitPane splitRatio="0.75">
+                    <left>
+                        <Border styles="{padding:4}">
+                            <BoxPane orientation="vertical" styles="{fill:true}">
+                                <FlowPane bxml:id="flowPane" styles="{padding:2}">
+                                    <decorators>
+                                        <effects:BaselineDecorator/>
+                                    </decorators>
+
+                                    <PushButton buttonData="0" styles="{minimumAspectRatio:1.5}"/>
+                                    <PushButton buttonData="1" styles="{minimumAspectRatio:1.5}"/>
+                                    <PushButton buttonData="2" styles="{minimumAspectRatio:1.5}"/>
+                                    <PushButton buttonData="3" preferredWidth="20" preferredHeight="20"/>
+                                    <PushButton buttonData="4" preferredWidth="30" preferredHeight="30"/>
+                                    <PushButton buttonData="5" preferredWidth="40" preferredHeight="40"/>
+                                    <PushButton buttonData="6" styles="{minimumAspectRatio:1.5}"/>
+                                    <PushButton buttonData="7" styles="{minimumAspectRatio:1.5}"/>
+                                </FlowPane>
+                            </BoxPane>
+                        </Border>
+                    </left>
+
+                    <right>
+                        <Border styles="{padding:{top:2, left:6}}">
+                            <BoxPane orientation="vertical">
+                                <Label text="Alignment" styles="{font:{bold:true}}"/>
+
+                                <bxml:define>
+                                    <ButtonGroup bxml:id="alignment"/>
+                                </bxml:define>
+                                <RadioButton bxml:id="leftRadioButton" buttonData="Left" buttonGroup="$alignment" selected="true"/>
+                                <RadioButton bxml:id="rightRadioButton" buttonData="Right" buttonGroup="$alignment"/>
+                                <RadioButton bxml:id="centerRadioButton" buttonData="Center" buttonGroup="$alignment"/>
+
+                                <BoxPane styles="{padding:{top:6}}">
+                                    <Checkbox bxml:id="alignToBaselineCheckbox" buttonData="Align to baseline"/>
+                                </BoxPane>
+                            </BoxPane>
+                    </Border>
+                    </right>
+                </SplitPane>
+            </layout:FlowPanes>
+            ]]>
+        </source>
+
+        <p>
+            The Java source is as follows. It wires up the event handlers that respond to changes
+            in the radio buttons' state:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/layout/FlowPanes.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.layout;
+
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Button;
+            import org.apache.pivot.wtk.ButtonStateListener;
+            import org.apache.pivot.wtk.Checkbox;
+            import org.apache.pivot.wtk.FlowPane;
+            import org.apache.pivot.wtk.HorizontalAlignment;
+            import org.apache.pivot.wtk.RadioButton;
+            import org.apache.pivot.wtk.Window;
+
+            public class FlowPanes extends Window implements Bindable {
+                private FlowPane flowPane = null;
+                private RadioButton leftRadioButton = null;
+                private RadioButton rightRadioButton = null;
+                private RadioButton centerRadioButton = null;
+                private Checkbox alignToBaselineCheckbox = null;
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    flowPane = (FlowPane)namespace.get("flowPane");
+                    leftRadioButton = (RadioButton)namespace.get("leftRadioButton");
+                    rightRadioButton = (RadioButton)namespace.get("rightRadioButton");
+                    centerRadioButton = (RadioButton)namespace.get("centerRadioButton");
+                    alignToBaselineCheckbox = (Checkbox)namespace.get("alignToBaselineCheckbox");
+
+                    ButtonStateListener buttonStateListener = new ButtonStateListener() {
+                        @Override
+                        public void stateChanged(Button button, Button.State previousState) {
+                            updateFlowPaneState();
+                        }
+                    };
+
+                    leftRadioButton.getButtonStateListeners().add(buttonStateListener);
+                    rightRadioButton.getButtonStateListeners().add(buttonStateListener);
+                    centerRadioButton.getButtonStateListeners().add(buttonStateListener);
+                    alignToBaselineCheckbox.getButtonStateListeners().add(buttonStateListener);
+
+                    updateFlowPaneState();
+                }
+
+                private void updateFlowPaneState() {
+                    HorizontalAlignment alignment = null;
+
+                    if (leftRadioButton.isSelected()) {
+                        alignment = HorizontalAlignment.LEFT;
+                    } else if (rightRadioButton.isSelected()) {
+                        alignment = HorizontalAlignment.RIGHT;
+                    } else if (centerRadioButton.isSelected()) {
+                        alignment = HorizontalAlignment.CENTER;
+                    }
+
+                    if (alignment != null) {
+                        flowPane.getStyles().put("alignment", alignment);
+                    }
+
+                    flowPane.getStyles().put("alignToBaseline", alignToBaselineCheckbox.isSelected());
+                }
+            }
+            ]]>
+        </source>
+    </body>
+</document>

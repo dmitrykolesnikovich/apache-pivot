@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="suggestion-popups">
+    <properties>
+        <title>Suggestion Popups</title>
+    </properties>
+
+    <body>
+        <p>
+            <tt>SuggestionPopup</tt> is a component that can be used to provide "auto-complete"
+            functionality for a text input. This example is essentially an extension of the
+            previous example that replaces the inline auto-complete with a popup list of suggested
+            matches:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="320" height="200">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/text/suggestion_popups.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The following is the BXML source for the application. It is not significantly different
+            from the previous example, though it is arranged to provide more room for the suggestion
+            popup:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/text/suggestion_popups.bxml">
+            <![CDATA[
+            <text:SuggestionPopups title="Suggestion Popups" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:text="org.apache.pivot.tutorials.text"
+                xmlns="org.apache.pivot.wtk">
+                <Border>
+                    <BoxPane orientation="vertical" styles="{padding:4, verticalAlignment:'top'}">
+                        <BoxPane styles="{verticalAlignment:'center'}">
+                            <Label text="State:"/>
+                            <TextInput bxml:id="stateTextInput"/>
+                        </BoxPane>
+                    </BoxPane>
+                </Border>
+            </text:SuggestionPopups>
+            ]]>
+        </source>
+
+        <p>
+            The Java source is as follows. The only difference between this code and the code
+            from the previous example is the definition of the text input character listener.
+            In the previous example, the listener performed a binary search to identify possible
+            matches. In this example, the listener generates a list of suggestions and displays
+            them in a suggestion popup. As the user enters text in the text input, the listener
+            builds the suggestion list and then opens a <tt>SuggestionPopup</tt> to present the
+            suggestions. If the user selects an entry from the popup, it is automatically copied
+            to the text input:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/text/SuggestionPopups.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.text;
+
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.ArrayList;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Display;
+            import org.apache.pivot.wtk.SuggestionPopup;
+            import org.apache.pivot.wtk.TextInput;
+            import org.apache.pivot.wtk.TextInputContentListener;
+            import org.apache.pivot.wtk.Window;
+
+            public class SuggestionPopups extends Window implements Bindable {
+                private TextInput stateTextInput = null;
+
+                private ArrayList<String> states;
+                private SuggestionPopup suggestionPopup = new SuggestionPopup();
+
+                public SuggestionPopups() {
+                    // Populate the lookup values, ensuring that they are sorted
+                    states = new ArrayList<String>();
+                    states.setComparator(String.CASE_INSENSITIVE_ORDER);
+
+                    states.add("Alabama");
+                    states.add("Alaska");
+                    states.add("Arizona");
+                    states.add("Arkansas");
+                    states.add("California");
+                    states.add("Colorado");
+                    states.add("Connecticut");
+                    states.add("Delaware");
+                    states.add("District of Columbia");
+                    states.add("Florida");
+                    states.add("Georgia");
+                    states.add("Hawaii");
+                    states.add("Idaho");
+                    states.add("Illinois");
+                    states.add("Indiana");
+                    states.add("Iowa");
+                    states.add("Kansas");
+                    states.add("Kentucky");
+                    states.add("Louisiana");
+                    states.add("Maine");
+                    states.add("Maryland");
+                    states.add("Massachusetts");
+                    states.add("Michigan");
+                    states.add("Minnesota");
+                    states.add("Mississippi");
+                    states.add("Missouri");
+                    states.add("Montana");
+                    states.add("Nebraska");
+                    states.add("Nevada");
+                    states.add("New Hampshire");
+                    states.add("New Jersey");
+                    states.add("New Mexico");
+                    states.add("New York");
+                    states.add("North Carolina");
+                    states.add("North Dakota");
+                    states.add("Ohio");
+                    states.add("Oklahoma");
+                    states.add("Oregon");
+                    states.add("Pennsylvania");
+                    states.add("Rhode Island");
+                    states.add("South Carolina");
+                    states.add("South Dakota");
+                    states.add("Tennessee");
+                    states.add("Texas");
+                    states.add("Utah");
+                    states.add("Vermont");
+                    states.add("Virginia");
+                    states.add("Washington");
+                    states.add("West Virginia");
+                    states.add("Wisconsin");
+                    states.add("Wyoming");
+                }
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    stateTextInput = (TextInput)namespace.get("stateTextInput");
+                    stateTextInput.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
+                        @Override
+                        public void textInserted(TextInput textInput, int index, int count) {
+                            String text = textInput.getText();
+                            ArrayList<String> suggestions = new ArrayList<String>();
+
+                            for (String state : states) {
+                                if (state.toUpperCase().startsWith(text.toUpperCase())) {
+                                    suggestions.add(state);
+                                }
+                            }
+
+                            if (suggestions.getLength() > 0) {
+                                suggestionPopup.setSuggestionData(suggestions);
+                                suggestionPopup.open(textInput);
+                            }
+                        }
+
+                        @Override
+                        public void textRemoved(TextInput textInput, int index, int count) {
+                            suggestionPopup.close();
+                        }
+                    });
+
+                    suggestionPopup.setListSize(4);
+                }
+
+                @Override
+                public void open(Display display, Window owner) {
+                    super.open(display, owner);
+                    stateTextInput.requestFocus();
+                }
+            }
+            ]]>
+        </source>
+    </body>
+</document>

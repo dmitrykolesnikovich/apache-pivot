@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="table-views.custom">
+    <properties>
+        <title>Custom TableView</title>
+    </properties>
+
+    <body>
+        <p>
+            This example continues the theme of the previous two examples and presents the final
+            standings of the top ten medal-winning countries in the 2008 Summer Olympics in a
+            <tt>TableView</tt> component. However, rather than representing the data using simple
+            string-based hash maps or deserialized JSON values, this example uses a custom Java bean
+            component to represent a table row. In addition to the "nation", "gold", "silver",
+            "bronze", and "total" properties used in the previous examples, it also defines a
+            "flag" property of type <tt>org.apache.pivot.wtk.media.Image</tt>, which is shown in
+            the first column:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication" width="480" height="240">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/tableviews/custom_table_view.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>The Java source for the bean class is as follows:</p>
+
+        <source type="java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.tableviews;
+
+            import java.net.URL;
+
+            import org.apache.pivot.util.concurrent.TaskExecutionException;
+            import org.apache.pivot.wtk.media.Image;
+
+            public class OlympicStanding {
+                private Image flag = null;
+                private String nation = null;
+                private int gold = 0;
+                private int silver = 0;
+                private int bronze = 0;
+
+                public Image getFlag() {
+                    return flag;
+                }
+
+                public void setFlag(Image flag) {
+                    this.flag = flag;
+                }
+
+                public void setFlag(URL flag) {
+                    try {
+                        setFlag(Image.load(flag));
+                    } catch (TaskExecutionException exception) {
+                        throw new IllegalArgumentException(exception);
+                    }
+                }
+
+                public String getNation() {
+                    return nation;
+                }
+
+                public void setNation(String nation) {
+                    this.nation = nation;
+                }
+
+                public int getGold() {
+                    return gold;
+                }
+
+                public void setGold(int gold) {
+                    this.gold = gold;
+                }
+
+                public int getSilver() {
+                    return silver;
+                }
+
+                public void setSilver(int silver) {
+                    this.silver = silver;
+                }
+
+                public int getBronze() {
+                    return bronze;
+                }
+
+                public void setBronze(int bronze) {
+                    this.bronze = bronze;
+                }
+
+                public int getTotal() {
+                    return (gold + silver + bronze);
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            The BXML source is as follows. Note that, in this example, the value for "total" no
+            longer needs to be hard-coded, because it is calculated by the bean class:
+        </p>
+
+        <source type="xml">
+            <![CDATA[
+            <Window title="Table Views" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:content="org.apache.pivot.wtk.content"
+                xmlns:tableviews="org.apache.pivot.tutorials.tableviews"
+                xmlns="org.apache.pivot.wtk">
+                <Border>
+                    <ScrollPane horizontalScrollBarPolicy="fill">
+                        <TableView bxml:id="tableView">
+                            <columns>
+                                <TableView.Column name="flag" width="20">
+                                    <cellRenderer>
+                                        <content:TableViewImageCellRenderer/>
+                                    </cellRenderer>
+                                </TableView.Column>
+                                <TableView.Column name="nation" width="3*" headerData="Nation"/>
+                                <TableView.Column name="gold" width="1*" headerData="Gold"/>
+                                <TableView.Column name="silver" width="1*" headerData="Silver"/>
+                                <TableView.Column name="bronze" width="1*" headerData="Bronze"/>
+                                <TableView.Column name="total" width="1*" headerData="Total"/>
+                            </columns>
+
+                            <tableViewSortListeners>
+                                function sortChanged(tableView) {
+                                    var tableData = tableView.getTableData();
+                                    tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
+                                }
+                            </tableViewSortListeners>
+
+                            <!-- Source: http://en.wikipedia.org/wiki/2008_Summer_Olympics_medal_table -->
+                            <tableviews:OlympicStanding nation="China" gold="51" silver="21" bronze="28" flag="@cn.png"/>
+                            <tableviews:OlympicStanding nation="United States" gold="36" silver="38" bronze="36" flag="@us.png"/>
+                            <tableviews:OlympicStanding nation="Russia" gold="23" silver="21" bronze="28" flag="@ru.png"/>
+                            <tableviews:OlympicStanding nation="Great Britain" gold="19" silver="13" bronze="15" flag="@gb.png"/>
+                            <tableviews:OlympicStanding nation="Germany" gold="16" silver="10" bronze="15" flag="@de.png"/>
+                            <tableviews:OlympicStanding nation="Australia" gold="14" silver="15" bronze="17" flag="@au.png"/>
+                            <tableviews:OlympicStanding nation="South Korea" gold="13" silver="10" bronze="8" flag="@kr.png"/>
+                            <tableviews:OlympicStanding nation="Japan" gold="9" silver="6" bronze="11" flag="@jp.png"/>
+                            <tableviews:OlympicStanding nation="Italy" gold="8" silver="10" bronze="10" flag="@it.png"/>
+                            <tableviews:OlympicStanding nation="France" gold="7" silver="16" bronze="17" flag="@fr.png"/>
+                        </TableView>
+
+                        <columnHeader>
+                            <TableViewHeader tableView="$tableView" sortMode="single_column"/>
+                        </columnHeader>
+                    </ScrollPane>
+                </Border>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Like the previous example, this one also supports sorting, using the same logic as the
+            JSON version. The only other major difference between this example and the previous is
+            the use of relative-width columns in the table view. The "n*" notation used here is
+            identical to that used by the <a href="table-panes.html">TablePane</a> container
+            discussed earlier.
+        </p>
+    </body>
+</document>

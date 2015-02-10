@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="property-binding">
+    <properties>
+        <title>Property Binding</title>
+    </properties>
+
+    <body>
+        <p>
+            This application demonstrates Pivot's support for "property binding". This feature allows
+            a caller to declaratively create a relationship between a source and target property such
+            that changes to the source are automatically reflected in the target.
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication" width="480" height="360">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/databinding/property_binding.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            Property binding is most commonly used to establish a one-way relationship between a
+            source and target value; however, as shown in the example, bi-directional bindings
+            are also supported. Property relationships are established in markup using the following
+            binding syntax:
+        </p>
+
+        <p>
+            <i>targetProperty="${mappingFunction:sourceProperty}"</i>
+        </p>
+
+        <p>
+            "mappingFunction" is an optional script function that can be used to transform a bound
+            source value before it is applied to the target property. If omitted, the source value
+            is simply applied to the target as-is.
+        </p>
+
+        <p>
+            The BXML source for the example is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/databinding/property_binding.bxml">
+            <![CDATA[
+            <databinding:PropertyBinding title="Property Binding" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:databinding="org.apache.pivot.tutorials.databinding"
+                xmlns="org.apache.pivot.wtk">
+                <bxml:script>
+                importClass(org.apache.pivot.tutorials.databinding.PropertyBinding);
+
+                function toUpperCase(value) {
+                    return value.toUpperCase();
+                }
+
+                function toHex(color) {
+                    return PropertyBinding.toHex(color);
+                }
+                </bxml:script>
+
+                <Border>
+                    <Form>
+                        <Form.Section heading="One-Way Binding">
+                            <TextInput bxml:id="textInput" Form.label="Text Input"/>
+                            <Label Form.label="Text" text="${textInput.text}"/>
+                            <Label Form.label="Uppercase Text" text="${toUpperCase:textInput.text}"/>
+                        </Form.Section>
+
+                        <Form.Section heading="Two-Way Binding">
+                            <TextInput bxml:id="textInput1" Form.label="Text Input 1" text="${textInput2.text}"/>
+                            <TextInput bxml:id="textInput2" Form.label="Text Input 2" text="${textInput1.text}"/>
+                        </Form.Section>
+
+                        <Form.Section heading="Style Binding">
+                            <ColorChooserButton bxml:id="colorChooserButton" Form.label="Color Chooser Button"
+                                selectedColor="#000000"/>
+                            <Label Form.label="Selected Color" text="${colorChooserButton.selectedColor}">
+                                <styles color="${colorChooserButton.selectedColor}"/>
+                            </Label>
+                            <Label Form.label="Selected Color (Hex)" text="${toHex:colorChooserButton.selectedColor}">
+                                <styles color="${toHex:colorChooserButton.selectedColor}"/>
+                            </Label>
+                        </Form.Section>
+
+                        <Form.Section heading="Manual Binding">
+                            <ListButton bxml:id="listButton" Form.label="List Button"
+                                listData="['Zero', 'One', 'Two', 'Three']" selectedIndex="0"/>
+                            <Label bxml:id="listButtonLabel1" Form.label="Selected Item"/>
+                            <Label bxml:id="listButtonLabel2" Form.label="Uppercase Selected Item"/>
+                        </Form.Section>
+                    </Form>
+                </Border>
+            </databinding:PropertyBinding>
+            ]]>
+        </source>
+
+        <p>
+            Note the use of mapping functions to transform the "textInput.text" property to
+            all caps before applying it to the bound label. Similarly, a mapping function is used
+            to transform the "selectedColor" property of the ColorChooserButton to a hex string
+            so it can be used as the value for the "color" style of the selected color label.
+        </p>
+
+        <p>
+            Bindings are not limited to BXML - they can also be defined programmatically. For
+            example, the "manual binding" shown in the demo is constructed in Java code as shown
+            in the <tt>initialize()</tt> method below:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/databinding/PropertyBinding.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.databinding;
+
+            import java.awt.Color;
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.beans.NamespaceBinding;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Window;
+
+            public class PropertyBinding extends Window implements Bindable {
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    // Bind list button selection to label text
+                    NamespaceBinding namespaceBinding1 = new NamespaceBinding(namespace,
+                        "listButton.selectedItem", "listButtonLabel1.text");
+
+                    namespaceBinding1.bind();
+
+                    // Bind list button selection to label text with bind mapping
+                    NamespaceBinding namespaceBinding2 = new NamespaceBinding(namespace,
+                        "listButton.selectedItem", "listButtonLabel2.text", new NamespaceBinding.BindMapping() {
+                        @Override
+                        public Object evaluate(Object value) {
+                            return value.toString().toUpperCase();
+                        }
+                    });
+
+                    namespaceBinding2.bind();
+                }
+
+                public static String toHex(Color color) {
+                    return String.format("#%02X%02X%02X", color.getRed(), color.getBlue(), color.getGreen());
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            The primary advantage to creating a binding relationship in code is that it can be
+            "unbound" when it is no longer needed; once established, bindings defined in BXML cannot
+            be removed.
+        </p>
+    </body>
+</document>

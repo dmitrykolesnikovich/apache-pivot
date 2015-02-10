@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="effects">
+    <properties>
+        <title>Effects</title>
+    </properties>
+
+    <body>
+        <p>
+            The term "effects" refers to Pivot's support for customizing the appearance or behavior
+            of a component, often over a timed interval producing an "animation". Pivot's primary
+            support for effects is provided by two types of classes: decorators and transitions.
+        </p>
+
+        <p>
+            Decorators allow an application alter the appearance of a component beyond what is
+            supported by the component's styles or any custom renderers the component might
+            support. For example, a decorator could be used to blur the main window of an
+            application when a modal dialog is open, or render the image shown by an image view in
+            grayscale rather than full color.
+        </p>
+
+        <p>
+            The following example demonstrates a number of stock Pivot decorators by attaching the
+            selected decorator to an <tt>ImageView</tt> component:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="640" height="490">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/effects/decorators.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML source for the example is shown below (there is no associated Java source):
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/effects/decorators.bxml">
+            <![CDATA[
+            <Window title="Decorators" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:effects="org.apache.pivot.wtk.effects"
+                xmlns="org.apache.pivot.wtk">
+                <TablePane>
+                    <columns>
+                        <TablePane.Column width="1*"/>
+                        <TablePane.Column width="-1"/>
+                    </columns>
+
+                    <TablePane.Row>
+                        <Border styles="{padding:2}">
+                            <BoxPane preferredWidth="480" preferredHeight="480"
+                                styles="{horizontalAlignment:'center', verticalAlignment:'top', padding:6}">
+                                <ImageView bxml:id="imageView" image="/org/apache/pivot/tutorials/IMG_0725_2.jpg"/>
+                            </BoxPane>
+                        </Border>
+
+                        <BoxPane orientation="vertical" styles="{padding:6, spacing:6}">
+                            <bxml:define>
+                                <ButtonGroup bxml:id="decoratorButtonGroup">
+                                    <buttonGroupListeners>
+                                        function selectionChanged(buttonGroup) {
+                                            var selection = buttonGroup.getSelection();
+
+                                            if (selection != null) {
+                                                var decorator = selection.getUserData().get("decorator");
+                                                imageView.getDecorators().removeAll();
+
+                                                if (decorator != null) {
+                                                    imageView.getDecorators().add(decorator);
+                                                }
+                                            }
+                                        }
+                                    </buttonGroupListeners>
+                                </ButtonGroup>
+                            </bxml:define>
+
+                            <RadioButton buttonData="None" buttonGroup="$decoratorButtonGroup" selected="true"/>
+
+                            <RadioButton buttonData="Blur" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:BlurDecorator/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Fade" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:FadeDecorator opacity="0.33"/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Grayscale" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:GrayscaleDecorator/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Reflection" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:ReflectionDecorator/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Saturation" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:SaturationDecorator multiplier="2.5"/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Shade" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:ShadeDecorator color="#ff0000" opacity="0.33"/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+
+                            <RadioButton buttonData="Watermark" buttonGroup="$decoratorButtonGroup">
+                                <userData>
+                                    <decorator>
+                                        <effects:WatermarkDecorator text="Watermark" font="Arial BOLD 24"
+                                            opacity="0.33"/>
+                                    </decorator>
+                                </userData>
+                            </RadioButton>
+                        </BoxPane>
+                    </TablePane.Row>
+                </TablePane>
+            </Window>
+            ]]>
+        </source>
+
+        <p>
+            Notice that decorators are allowed to paint outside of a component's bounds (which a
+            component generally is not). This allows decorators to be used to create the reflection
+            effect shown in the example, or to paint a drop shadow (in fact, the drop shadows that
+            appear beneath Pivot windows are produced by the <tt>DropShadowDecorator</tt> class).
+        </p>
+    </body>
+</document>

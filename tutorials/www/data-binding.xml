@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="data-binding">
+    <properties>
+        <title>Data Binding</title>
+    </properties>
+
+    <body>
+        <p>
+            Data binding refers to the process of automatically populating or extracting data from
+            a set of user interface elements. In Pivot, data binding is driven primarily by two
+            methods of the <tt>Component</tt> class: <tt>load()</tt> and <tt>store()</tt>. Each
+            method takes an <tt>Object</tt> argument called the "context". The context is either an
+            instance of a Java bean class or an instance of
+            <tt>org.apache.pivot.collections.Dictionary</tt>. Calling <tt>load()</tt> causes data
+            from the context to be "loaded" into the component; calling <tt>store()</tt> performs
+            the reverse operation and "stores" data from the component into the context. A third
+            method, <tt>clear()</tt> allows a caller to reset any bindings.
+        </p>
+
+        <p>
+            Components that support data binding provide "key" properties that allow a caller to
+            associate a property value with a value in the bind context. For example, the
+            <tt>Label</tt> class provides a "textKey" property that maps the label's "text" property
+            to a value provided by the context.
+        </p>
+
+        <p>
+            The following application demonstrates data binding. It allows the user to load a form
+            with address data either from a JSON file or from a Java bean object, as well as clear
+            the form. Note that binding to a Java bean is accomplished by wrapping the bean in an
+            instance of <tt>org.apache.pivot.beans.BeanAdapter</tt> before passing it to the
+            <tt>load()</tt> method:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication" width="430" height="280">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/databinding/data_binding.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML simply sets up the form structure and the bind keys:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/databinding/data_binding.bxml">
+            <![CDATA[
+            <databinding:DataBinding title="Data Binding" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:databinding="org.apache.pivot.tutorials.databinding"
+                xmlns="org.apache.pivot.wtk">
+                <Border styles="{padding:6}">
+                    <BoxPane orientation="vertical" styles="{spacing:10, fill:true}">
+                        <Form bxml:id="form" styles="{showFlagIcons:false}">
+                            <Form.Section>
+                                <Label bxml:id="sourceLabel" Form.label="Source" styles="{font:{italic:true}}"/>
+
+                                <Label Form.label="ID" textKey="id"/>
+                                <TextInput Form.label="Name" textKey="name"/>
+
+                                <BoxPane Form.label="Address" orientation="vertical">
+                                    <TextInput textKey="address.street" prompt="Street"/>
+                                    <BoxPane>
+                                        <TextInput textKey="address.city" prompt="City"/>
+                                        <TextInput textKey="address.state" textSize="6" prompt="State"/>
+                                        <TextInput textKey="address.zip" textSize="6" prompt="Zip"/>
+                                    </BoxPane>
+                                </BoxPane>
+
+                                <TextInput Form.label="Phone" textKey="phoneNumber"/>
+                                <TextInput Form.label="Email" textKey="emailAddress"/>
+
+                                <BoxPane Form.label="IM">
+                                    <TextInput textKey="imAccount.id"/>
+                                    <ListButton selectedItemKey="imAccount.type"
+                                        listData="['AIM', 'Jabber', 'Yahoo']"/>
+                                </BoxPane>
+                            </Form.Section>
+                        </Form>
+
+                        <Separator/>
+
+                        <BoxPane styles="{horizontalAlignment:'right'}">
+                            <PushButton bxml:id="loadJSONButton" buttonData="Load JSON"/>
+                            <PushButton bxml:id="loadJavaButton" buttonData="Load Java"/>
+                            <PushButton bxml:id="clearButton" buttonData="Clear"/>
+                        </BoxPane>
+                    </BoxPane>
+                </Border>
+            </databinding:DataBinding>
+            ]]>
+        </source>
+
+        <p>
+            The windows's <tt>initialize()</tt> method defines the button press listeners that
+            load or clear the form:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/databinding/DataBinding.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.databinding;
+
+            import java.io.InputStream;
+            import java.net.URL;
+
+            import org.apache.pivot.beans.BeanAdapter;
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.json.JSONSerializer;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Button;
+            import org.apache.pivot.wtk.ButtonPressListener;
+            import org.apache.pivot.wtk.Form;
+            import org.apache.pivot.wtk.Label;
+            import org.apache.pivot.wtk.PushButton;
+            import org.apache.pivot.wtk.Window;
+
+            public class DataBinding extends Window implements Bindable {
+                private Form form = null;
+                private PushButton loadJavaButton = null;
+                private PushButton loadJSONButton = null;
+                private PushButton clearButton = null;
+                private Label sourceLabel = null;
+
+                private static final Contact CONTACT = new Contact("101", "Joe User",
+                    new Address("123 Main St.", "Cambridge", "MA", "02142"),
+                    "(617) 555-1234", "joe_user@foo.com",
+                    new IMAccount("juser1234", "AIM"));
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    form = (Form)namespace.get("form");
+                    loadJavaButton = (PushButton)namespace.get("loadJavaButton");
+                    loadJSONButton = (PushButton)namespace.get("loadJSONButton");
+                    clearButton = (PushButton)namespace.get("clearButton");
+                    sourceLabel = (Label)namespace.get("sourceLabel");
+
+                    loadJavaButton.getButtonPressListeners().add(new ButtonPressListener() {
+                        @Override
+                        public void buttonPressed(Button button) {
+                            form.load(new BeanAdapter(CONTACT));
+                            sourceLabel.setText("Java");
+                        }
+                    });
+
+                    loadJSONButton.getButtonPressListeners().add(new ButtonPressListener() {
+                        @Override
+                        public void buttonPressed(Button button) {
+                            JSONSerializer serializer = new JSONSerializer();
+                            InputStream inputStream = getClass().getResourceAsStream("contact.json");
+
+                            try {
+                                form.load(serializer.readObject(inputStream));
+                                sourceLabel.setText("JSON");
+                            } catch(Exception exception) {
+                                System.err.println(exception);
+                            }
+
+                            button.setEnabled(true);
+                        }
+                    });
+
+                    clearButton.getButtonPressListeners().add(new ButtonPressListener() {
+                        @Override
+                        public void buttonPressed(Button button) {
+                            form.clear();
+                            sourceLabel.setText("");
+                        }
+                    });
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            The JSON representation of the sample contact record is defined as follows (note that,
+            while JSON is used to represent the data in this example, any class that implements
+            the <tt>Dictionary</tt> interface, including <tt>HashMap</tt>, can be used):
+        </p>
+
+        <source type="jscript" location="org/apache/pivot/tutorials/databinding/contact.json">
+            <![CDATA[
+            {   id: 101,
+                name: "Joe User",
+
+                address: {
+                    street: "123 Main St.",
+                    city: "Cambridge",
+                    state: "MA",
+                    zip: "02142"
+                },
+
+                phoneNumber: "(617) 555-1234",
+                emailAddress: "joe_user@foo.com",
+
+                imAccount: {
+                    id: "juser1234",
+                    type: "AIM"
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            The Java bean version, which represents the same data, is composed of the following
+            classes:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/databinding/Contact.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.databinding;
+
+            public class Contact {
+                private String id;
+                private String name;
+                private Address address;
+                private String phoneNumber;
+                private String emailAddress;
+                private IMAccount imAccount;
+
+                public Contact(String id, String name, Address address, String phoneNumber,
+                    String emailAddress, IMAccount imAccount) {
+                    this.id = id;
+                    this.name = name;
+                    this.address = address;
+                    this.phoneNumber = phoneNumber;
+                    this.emailAddress = emailAddress;
+                    this.imAccount = imAccount;
+                }
+
+                public String getID() {
+                    return id;
+                }
+
+                public String getId() {
+                    return getID();
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public Address getAddress() {
+                    return address;
+                }
+
+                public String getPhoneNumber() {
+                    return phoneNumber;
+                }
+
+                public String getEmailAddress() {
+                    return emailAddress;
+                }
+
+                public IMAccount getIMAccount() {
+                    return imAccount;
+                }
+
+                public IMAccount getImAccount() {
+                    return getIMAccount();
+                }
+            }
+            ]]>
+        </source>
+
+        <source type="java" location="org/apache/pivot/tutorials/databinding/Address.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.databinding;
+
+            public class Address {
+                private String street;
+                private String city;
+                private String state;
+                private String zip;
+
+                public Address() {
+                    this(null, null, null, null);
+                }
+
+                public Address(String street, String city, String state, String zip) {
+                    this.street = street;
+                    this.city = city;
+                    this.state = state;
+                    this.zip = zip;
+                }
+
+                public String getStreet() {
+                    return street;
+                }
+
+                public String getCity() {
+                    return city;
+                }
+
+                public String getState() {
+                    return state;
+                }
+
+                public String getZip() {
+                    return zip;
+                }
+            }
+            ]]>
+        </source>
+
+        <source type="java" location="org/apache/pivot/tutorials/databinding/IMAccount.java">
+            <![CDATA[
+            public class IMAccount {
+                private String id;
+                private String type;
+
+                public IMAccount() {
+                    this(null, null);
+                }
+
+                public IMAccount(String id, String type) {
+                    this.id = id;
+                    this.type = type;
+                }
+
+                public String getID() {
+                    return id;
+                }
+
+                public String getId() {
+                    return getID();
+                }
+
+                public String getType() {
+                    return type;
+                }
+            }
+            ]]>
+        </source>
+
+        <p>
+            This application's data binding requirements are fairly straightforward. It is
+            load-only, and all of the data is simply presented as-is. However, many real-world
+            applications may want to transform the data in some way before presenting it to the
+            user; for example, an application may want to apply currency formatting to a numeric
+            value, or convert an encoded date string to an instance of
+            <tt>org.apache.pivot.util.CalendarDate</tt>. Components that support data binding
+            provide a "bind mapping" interface to facilitate such transformations. Bind mappings
+            are outside the scope of this example but are demonstrated in the
+            <a href="query-servlet.html">QueryServlet</a> section as well as the
+            <a href="stock-tracker.html">Stock Tracker</a> tutorial.
+        </p>
+
+        <p>
+            Also, though it is not shown in this example, bindable components allow a caller to
+            control the bind direction via a "bind type" property. The bind type is specified by
+            an instance of the <tt>org.apache.pivot.wtk.BindType</tt> enum, which defines the
+            following values:
+        </p>
+
+        <ul>
+            <li><tt>LOAD</tt> - binding will only occur during a <tt>load()</tt> operation</li>
+            <li><tt>STORE</tt> - binding will only occur during a <tt>store()</tt> operation</li>
+            <li><tt>BOTH</tt> - binding occur during both <tt>load()</tt> and <tt>store()</tt> operations</li>
+        </ul>
+    </body>
+</document>

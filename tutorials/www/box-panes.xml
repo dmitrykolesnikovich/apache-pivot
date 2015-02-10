@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in
+compliance with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<document id="box-panes">
+    <properties>
+        <title>Box Panes</title>
+    </properties>
+
+    <body>
+        <p>
+            Box panes are used to arrange components sequentially: horizontal box panes lay out
+            their children horizontally from left to right, and vertical box panes arrange their
+            children vertically from top to bottom.
+        </p>
+
+        <p>
+            Box panes support a number of styles that allow a caller to customize the arrangement
+            of child components:
+        </p>
+
+        <ul>
+            <li>
+                "padding" - the amount of space the box pane reserves around the perimeter of the
+                container.
+            </li>
+            <li>
+                "spacing" - the amount of space the box pane inserts between components.
+            </li>
+            <li>
+                "horizontalAlignment" - how the box pane aligns components on the x-axis.
+            </li>
+            <li>
+                "verticalAlignment" - how the box pane aligns components on the y-axis.
+            </li>
+            <li>
+                "fill" - whether or not the box pane should size all components to fill the
+                available space; if <tt>true</tt>, horizontal box panes will make all components
+                the same height, and vertical box panes will make all components the same width.
+            </li>
+        </ul>
+
+        <p>
+            How the alignment values are handled varies depending on the box pane's orientation.
+            Below is a sample application that demonstrates the effect each alignment value has on
+            the box pane's components:
+        </p>
+
+        <application class="org.apache.pivot.wtk.ScriptApplication"
+            width="460" height="310">
+            <libraries>
+                <library>core</library>
+                <library>wtk</library>
+                <library>wtk-terra</library>
+                <library>tutorials</library>
+            </libraries>
+            <startup-properties>
+                <src>/org/apache/pivot/tutorials/layout/box_panes.bxml</src>
+            </startup-properties>
+        </application>
+
+        <p>
+            The BXML source for the application is shown below:
+        </p>
+
+        <source type="xml" location="org/apache/pivot/tutorials/layout/box_panes.bxml">
+            <![CDATA[
+            <layout:BoxPanes title="Box Panes" maximized="true"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:layout="org.apache.pivot.tutorials.layout"
+                xmlns="org.apache.pivot.wtk">
+                <TablePane>
+                    <columns>
+                        <TablePane.Column width="300"/>
+                        <TablePane.Column width="-1"/>
+                    </columns>
+
+                    <TablePane.Row height="-1">
+                        <Border styles="{padding:6, color:'#999999'}">
+                            <BoxPane bxml:id="boxPane">
+                                <PushButton buttonData="One"/>
+                                <PushButton buttonData="Two"/>
+                                <PushButton buttonData="Three"/>
+                            </BoxPane>
+                        </Border>
+
+                        <BoxPane orientation="vertical" styles="{padding:6, spacing:8, fill:true}">
+                            <bxml:define>
+                                <ButtonGroup bxml:id="orientation"/>
+                                <ButtonGroup bxml:id="horizontalAlignment"/>
+                                <ButtonGroup bxml:id="verticalAlignment"/>
+                            </bxml:define>
+
+                            <Label text="Orientation" styles="{font:{bold:true}}"/>
+                            <RadioButton bxml:id="horizontalOrientationButton" buttonData="Horizontal" buttonGroup="$orientation" selected="true"/>
+                            <RadioButton bxml:id="verticalOrientationButton" buttonData="Vertical" buttonGroup="$orientation"/>
+
+                            <Label text="Horizontal Alignment" styles="{font:{bold:true}}"/>
+                            <RadioButton bxml:id="horizontalAlignmentLeftButton" buttonData="Left" buttonGroup="$horizontalAlignment" selected="true"/>
+                            <RadioButton bxml:id="horizontalAlignmentRightButton" buttonData="Right" buttonGroup="$horizontalAlignment"/>
+                            <RadioButton bxml:id="horizontalAlignmentCenterButton" buttonData="Center" buttonGroup="$horizontalAlignment"/>
+
+                            <Label text="Vertical Alignment" styles="{font:{bold:true}}"/>
+                            <RadioButton bxml:id="verticalAlignmentTopButton" buttonData="Top" buttonGroup="$verticalAlignment" selected="true"/>
+                            <RadioButton bxml:id="verticalAlignmentBottomButton" buttonData="Bottom" buttonGroup="$verticalAlignment"/>
+                            <RadioButton bxml:id="verticalAlignmentCenterButton" buttonData="Center" buttonGroup="$verticalAlignment"/>
+
+                            <BoxPane styles="{padding:{top:8}}">
+                                <Checkbox bxml:id="fillCheckbox" buttonData="Fill"/>
+                            </BoxPane>
+                        </BoxPane>
+                    </TablePane.Row>
+                </TablePane>
+            </layout:BoxPanes>
+            ]]>
+        </source>
+
+        <p>
+            The Java source is as follows. Most of the code is simply event handling logic that
+            responds to changes in the radio buttons' state:
+        </p>
+
+        <source type="java" location="org/apache/pivot/tutorials/layout/BoxPanes.java">
+            <![CDATA[
+            package org.apache.pivot.tutorials.layout;
+
+            import java.net.URL;
+
+            import org.apache.pivot.beans.Bindable;
+            import org.apache.pivot.collections.Map;
+            import org.apache.pivot.util.Resources;
+            import org.apache.pivot.wtk.Button;
+            import org.apache.pivot.wtk.ButtonStateListener;
+            import org.apache.pivot.wtk.Checkbox;
+            import org.apache.pivot.wtk.BoxPane;
+            import org.apache.pivot.wtk.HorizontalAlignment;
+            import org.apache.pivot.wtk.Orientation;
+            import org.apache.pivot.wtk.RadioButton;
+            import org.apache.pivot.wtk.VerticalAlignment;
+            import org.apache.pivot.wtk.Window;
+
+            public class BoxPanes extends Window implements Bindable {
+                private BoxPane boxPane = null;
+                private RadioButton horizontalOrientationButton = null;
+                private RadioButton verticalOrientationButton = null;
+                private RadioButton horizontalAlignmentRightButton = null;
+                private RadioButton horizontalAlignmentLeftButton = null;
+                private RadioButton horizontalAlignmentCenterButton = null;
+                private RadioButton verticalAlignmentTopButton = null;
+                private RadioButton verticalAlignmentBottomButton = null;
+                private RadioButton verticalAlignmentCenterButton = null;
+                private Checkbox fillCheckbox = null;
+
+                @Override
+                public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+                    boxPane = (BoxPane)namespace.get("boxPane");
+                    horizontalOrientationButton = (RadioButton)namespace.get("horizontalOrientationButton");
+                    verticalOrientationButton = (RadioButton)namespace.get("verticalOrientationButton");
+                    horizontalAlignmentRightButton = (RadioButton)namespace.get("horizontalAlignmentRightButton");
+                    horizontalAlignmentLeftButton = (RadioButton)namespace.get("horizontalAlignmentLeftButton");
+                    horizontalAlignmentCenterButton = (RadioButton)namespace.get("horizontalAlignmentCenterButton");
+                    verticalAlignmentTopButton = (RadioButton)namespace.get("verticalAlignmentTopButton");
+                    verticalAlignmentBottomButton = (RadioButton)namespace.get("verticalAlignmentBottomButton");
+                    verticalAlignmentCenterButton = (RadioButton)namespace.get("verticalAlignmentCenterButton");
+                    fillCheckbox = (Checkbox)namespace.get("fillCheckbox");
+
+                    ButtonStateListener buttonStateListener = new ButtonStateListener() {
+                        @Override
+                        public void stateChanged(Button button, Button.State previousState) {
+                            updateBoxPaneState();
+                        }
+                    };
+
+                    horizontalOrientationButton.getButtonStateListeners().add(buttonStateListener);
+                    verticalOrientationButton.getButtonStateListeners().add(buttonStateListener);
+                    horizontalAlignmentLeftButton.getButtonStateListeners().add(buttonStateListener);
+                    horizontalAlignmentRightButton.getButtonStateListeners().add(buttonStateListener);
+                    horizontalAlignmentCenterButton.getButtonStateListeners().add(buttonStateListener);
+                    verticalAlignmentTopButton.getButtonStateListeners().add(buttonStateListener);
+                    verticalAlignmentBottomButton.getButtonStateListeners().add(buttonStateListener);
+                    verticalAlignmentCenterButton.getButtonStateListeners().add(buttonStateListener);
+                    fillCheckbox.getButtonStateListeners().add(buttonStateListener);
+
+                    updateBoxPaneState();
+                }
+
+                private void updateBoxPaneState() {
+                    Orientation orientation = null;
+                    if (horizontalOrientationButton.isSelected()) {
+                        orientation = Orientation.HORIZONTAL;
+                    } else if (verticalOrientationButton.isSelected()) {
+                        orientation = Orientation.VERTICAL;
+                    }
+
+                    if (orientation != null) {
+                        boxPane.setOrientation(orientation);
+                    }
+
+                    HorizontalAlignment horizontalAlignment = null;
+                    if (horizontalAlignmentLeftButton.isSelected()) {
+                        horizontalAlignment = HorizontalAlignment.LEFT;
+                    } else if (horizontalAlignmentRightButton.isSelected()) {
+                        horizontalAlignment = HorizontalAlignment.RIGHT;
+                    } else if (horizontalAlignmentCenterButton.isSelected()) {
+                        horizontalAlignment = HorizontalAlignment.CENTER;
+                    }
+
+                    if (horizontalAlignment != null) {
+                        boxPane.getStyles().put("horizontalAlignment", horizontalAlignment);
+                    }
+
+                    VerticalAlignment verticalAlignment = null;
+                    if (verticalAlignmentTopButton.isSelected()) {
+                        verticalAlignment = VerticalAlignment.TOP;
+                    } else if (verticalAlignmentBottomButton.isSelected()) {
+                        verticalAlignment = VerticalAlignment.BOTTOM;
+                    } else if (verticalAlignmentCenterButton.isSelected()) {
+                        verticalAlignment = VerticalAlignment.CENTER;
+                    }
+
+                    if (verticalAlignment != null) {
+                        boxPane.getStyles().put("verticalAlignment", verticalAlignment);
+                    }
+
+                    boxPane.getStyles().put("fill", fillCheckbox.isSelected());
+                }
+            }
+            ]]>
+        </source>
+    </body>
+</document>
